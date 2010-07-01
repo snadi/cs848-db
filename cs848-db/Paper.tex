@@ -10,7 +10,7 @@
 %
 % paper title
 % can use linebreaks \\ within to get better formatting as desired
-\title{A Survey of Physical Design Techniques of Information Systems -TEST }
+\title{A Survey of Physical Design Techniques of Information Systems}
 
 
 % author names and affiliations
@@ -120,7 +120,7 @@ Lehmen and Carey~\cite{lehman1986study} study the different features needed for 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=9cm]{Ttree.png}
+\includegraphics[width=9cm]{figs/Ttree.png}
 \caption{T Tree by Lehmen and Carey~\cite{lehman1986study}}
 \label{fig:ttree}
 \end{figure}
@@ -161,14 +161,17 @@ and their parts, maintained by a system having capabilities to
 manage and control the collection itself and the information
 represented by that collection.'' Salminena and Tompa also highlight some of the requirements of an XML database system. These requirements include dealing with namespaces, Internet resources, querying parts of an XML document, and transformations of XML documents.
 
+There are two ways in which an XML database system can be designed. The first is to have the database internally translate the XML document into relational tables (XML-enabled databases). The second is to have data structures that can persistently store XML documents (native XML databases). In this section, we will discuss how the database's physical design needs to be adapted in both cases. Other challenges such as expressing and executing queries and updates are faced in XML database design, but these are beyond the scope of this survey.
 
-There are two ways to store XML documents in a database. The first is to have the database internally translate the XML document into relational tables (XML-enabled databases). The second is to have data structures that can persistently store XML documents (native XML databases). eXist~\cite{meier2009exist} and TIMBER~\cite{jagadish2002timber} are two of the famous research efforts to design a native XML database.
+%eXist~\cite{meier2009exist} and TIMBER~\cite{jagadish2002timber} are two of the famous research efforts to design a native XML database.
 
 \subsubsection{Index Structures}
 
-Despite the special nature of XML documents, some of the index structures used in relational databases can still be utilized in XML databases. However, some adjustments may need to be made to fit the nature of the XML documents. For XML-enabled databases, XML documents are usually represented as relational tables, and then indexed similar to other tables. Pal et al.~\cite{pal2004indexing} describe how this is done in Microsoft SQL Server 2005. To start with, a new data type called `XML' was introduced. This data type could contain values of complete XML documents, or just fragments of XML data. First, the different nodes in the XML data are labelled with the ORDPATH~\cite{o2004ordpaths} mechanism. The XML data is then shredded into a relational table with five main columns:ORDPATH, TAG, NODE\_TYPE, VALUE, and PATH\_ID. This information is then stored in a $B^{+}-tree$ as the primary index of the XML type. Additionally, a secondary index can be created on any of the columns of the primary index to speed things up.
+Despite the special nature of XML documents, the same index structures used in relational databases can still be utilized in XML databases. However, some adjustments may need to be made to fit the nature of the XML documents. For XML-enabled databases, XML documents are usually represented as relational tables, and then indexed similar to other tables. Pal et al.~\cite{pal2004indexing} describe how this is done in Microsoft SQL Server 2005. To start with, a new data type called `XML' was introduced. This data type could contain values of complete XML documents, or just fragments of XML data. First, the different nodes in the XML data are labelled with the ORDPATH~\cite{o2004ordpaths} mechanism. The XML data is then shredded into a relational table with five main columns:ORDPATH, TAG, NODE\_TYPE, VALUE, and PATH\_ID. This information is then stored in a $B^{+}-tree$ as the primary index of the XML type. Additionally, a secondary index can be created on any of the columns of the primary index to speed things up.
 
-For native XML databases such as eXist~\cite{meier2009exist}, $B^{+}-trees$ were still used to index the XML documents. However, in contrast to XML-enabled databases, the XML data is not first stripped into a relational table. eXist uses a number schema to assign unique identifiers to each node in the XML document. These unique number identifiers allow the determination of any node's parent, sibling or possible child nodes. Four index files are created for XML data where all the indexes are based on $B^{+}-trees$. One index manages the collection hierarchy, one index collects nodes in a paged file and associates unique node identifiers to the actual nodes, one index indexes elements and attributes, and the last index keeps track of word occurrences and is used by the fulltext search extensions.
+For native XML databases such as eXist~\cite{meier2009exist} or TIMBER~\cite{jagadish2002timber}, $B^{+}-trees$ were still used to index the XML documents. However, in contrast to XML-enabled databases, the XML data is not first stripped into a relational table. eXist uses a number schema to assign unique identifiers to each node in the XML document. These unique number identifiers allow the determination of any node's parent, sibling or possible child nodes. Four index files are created for XML data where all the indexes are based on $B^{+}-trees$. One index manages the collection hierarchy, one index collects nodes in a paged file and associates unique node identifiers to the actual nodes, one index indexes elements and attributes, and the last index keeps track of word occurrences and is used by the fulltext search extensions.
+
+TIMBER also uses a similar numbering schema. There are minor differences between the two numbering techniques, but the main idea is the same. The numbering is based on three values of a node: its start label, its end label, and its level (i.e. nested depth). On the other hand, Sedna~\cite{taranov2010sedna} uses a different reasoning to produce its numbering schema. Sedna assignes string identifiers to nodes such that they are lexically ordered according to the position of the node. Despite the differences in the ways the numbering is constructed, it seems that that no novel indexing structure is needed for XML databases. The problem is rather how to assign the nodes unique identifiers (the numbers or labels in the numbering schema) that can be used as identifiers in the index to reflect the XML document structure.
 
 \subsubsection{Materialized Views}
 
