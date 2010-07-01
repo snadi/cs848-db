@@ -1,42 +1,14 @@
 FILE    := Paper
-PICFIGS := $(patsubst %.pic,%.pic.tex,$(wildcard figs/*.pic))
 SRCFIGS := $(wildcard figs/*.png)
-FIGS    := $(patsubst %.png,%.eps,$(SRCFIGS))
-ARGS	:= --shell-escape
+ARGS	:= -interaction=nonstopmode
 
-all: $(FILE).tex *.bib figs
-	latex $(ARGS) $(FILE).tex || (rm $(FILE).dvi && false)
-	bibtex $(FILE)
-	latex $(ARGS) $(FILE).tex 
-	latex $(ARGS) $(FILE).tex 
-	#dvipdfm -p letter -o $(FILE).pdf $(FILE) #Note, dvipdfm does not generate a IEEE-xplore compatible file by default
-	dvips -t letter -Ppdf -G0 $(FILE) -o $(FILE).ps
-	ps2pdf14 -dEmbedAllFonts=true -dUseFlateCompression=true -dPDFSETTINGS=/prepress $(FILE).ps
+all: pdf clean
 
-foo:
-	echo $(SRCFIGS)
-	echo $(FIGS)
-	echo $(PICFIGS)
-
-.PHONY: rubber
-
-%.tex : %.pic.tex 
-	pic -t tpicsmacros $< > $@
-
-rubber: doc.tex
-	rubber -o dvipdfm -v  doc.tex
-
-figs: $(FIGS) $(PICFIGS)
-
-%.eps : %.png
-	/usr/bin/convert $< $@ 
-
-%.eps : %.bmp
-	/usr/bin/convert $< $@
-
-%.pic.tex : %.pic
-	pic -t tpicsmacros $< > $@
-
+pdf: $(FILE).tex *.bib
+	@pdflatex $(ARGS) $(FILE).tex > /dev/null 2>&1
+	@bibtex $(FILE).aux > /dev/null 2>&1
+	@pdflatex $(ARGS) $(FILE).tex > /dev/null 2>&1
+	@pdflatex $(ARGS) $(FILE).tex > /dev/null 2>&1
 
 clean:
-	rm -f *.aux *.bbl *.blg *.dvi *.idx *.log *.ilg *.ind *.out figs/*.pic.tex
+	@rm -f *.aux *.bbl *.blg *.log *.out
