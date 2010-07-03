@@ -61,7 +61,7 @@ cite{comer1979ubiquitous} as shown in Figure (PUT A FIGURE FOR A B TREE HERE). B
 
 Different variations of B-trees have been used. For example, $B^{+}-trees$ are now the main method of indexing in Disk Based Relational Databases (DRDB). These will be discussed in Section~\ref{SEC-DDRDB}. The T Tree has been proposed for main memory databases, and will be discussed in Section~\ref{SEC-MMDB}. Cache sensitive indexes were then proposed. A variation of T Trees, Cache Sensitive T-Trees (CST-Trees) was introduced, and is also discussed in Section~\ref{SEC-MMDB}. On the same note, Cache Conscious $B^{+}-trees$ and Prefetching $J^{+}-Trees$ are also discussed in Section~\ref{SEC-MMDB}. 
 
-Of course, there are other indexing techniques used such as hash tables, and bitmap indices. Bitmap indices are used in Data Warehouses, and will be discussed in details in Section~\ref{SEC-WAREHOUSES}.
+Of course, there are other indexing techniques used such as hash tables, and bitmap indices. For example, Bitmap indices are commonly used in Data Warehouses, and will be discussed in details in Section~\ref{SEC-WAREHOUSES}.
 
 \subsection{Materialized Views}
 
@@ -78,6 +78,7 @@ Partitioning is an important aspect of physical design as it reduces table scann
 The main advantage of any type of partitioning is to reduce the amount of time it takes to scan a table which in turn improves performance. For example, if a table has 1000 records, and a query is only using the first 20 records then having these 20 records in a partition containing 50 records will save time as opposed to examining all the 1000 records.
 
 \subsection{Clustering}
+When only records satisfying certain criteria are need from a table, it is often unnecessary to scan the whole table. For example, if only records that occrurred in January 2010 are needed, then querying all the table would be an extremely unnecessary overhead. This is where clustering comes in. Clustering relfects how the records are physically located together on disk. Records that are likely to be queried together will be stored physically together to avoid querying the whole table. For the previously mentioned example, the data can be clustered by month, such that all the records of January 2010 are physically in the same page, for example. In this case, only this page will need to be read. As people realized the potential of clustering, multidimensional clustering was introduced where data is clustered based on different criteria at the same time.
 
 \subsection{Data Compression}
 
