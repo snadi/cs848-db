@@ -151,12 +151,15 @@ Chen et al.~\cite{chen2001improving} propose using prefetching to improve the pe
 \subsubsection*{$J^{+}-trees$ and $pJ^{+}-trees$}
 
 
-
-
-
 \subsection{Data Warehouses}
 \label{SEC-WAREHOUSES}
 \subsubsection*{Background}
+
+OLAP vs OLTP 
+
+OLTP \cite{sen2005comparison}
+
+bases for decision support systems \cite{248616}
 Data warehouses, in contrast, are targeted for decision support. Historical, summarized and consolidated data is more important than detailed, individual records.
 
 The workloads are query intensive with mostly ad hoc, complex queries that can access millions of records and perform a lot of scans, joins, and aggregates. Query throughput and response times are more important than transaction throughput.
@@ -169,20 +172,7 @@ Decision support usually requires consolidating data from many heterogeneous sou
 
 Supporting the multidimensional data models and operations typical of OLAP requires special data organization, access methods, and implementation methods, not generally provided by DBMSs targeted for OLTP.
 
-bases for decision support systems \cite{248616}
-OLAP vs OLTP
-ROLAP
-          o Data is stored in relational databases.
-          o Support extensions to SQL.
-          o Efficiently implement the multidimensional data model and operations.
-          o Ex: Microstrategy.
-MOLAP
-          o Directly store multidimensional data in special data structures.
-          o Implement the OLAP operations over these special data structures.
-          o Star Schema.
-          o Snowflake Schema.
-          o Fact Constellations.
-          o Ex: Essbase (Arbor), statistical DBMSes.
+
 star schema
 fact table
 
@@ -191,15 +181,11 @@ Typical Operations
     * Load
     * Refresh
 
-
-
-\subsubsection*{Challenges}
 - joins in data warehouses are usualy expensive since the fact table (the largest one) participates in every join \cite{628286}
-- 
 
 \subsubsection*{Indexes}
 \paragraph{Tree-based Indexes}
-B-tree (B+ trees but commonly referred to as B-trees) \cite{253268}, R-tree \cite{602266}, K-D-B-tree \cite{582321}, BV-tree \cite{223796}
+B-tree (B+ trees but commonly referred to as B-trees) \cite{253268}, R-tree \cite{602266, Cheung20011}, K-D-B-tree \cite{582321}, BV-tree \cite{223796}, UB-tree \cite{bayer1997universal}
 
 \paragraph{Bitmapped Join Indexes}
 \cite{212001}
@@ -212,6 +198,7 @@ Involves positional indexing where tuples are accessed based on their ordinal po
 
 
 \subsubsection*{Partitioning}
+\cite{thusoo2010data}
 \paragraph{Vertical Partitioning}
 
 \paragraph{Horizontal Partitioning}
@@ -221,6 +208,21 @@ not very useful since most queries are ad-hoc \cite{653447}
 \cite{355309}
 
 \subsubsection*{Data Cubes}
+\cite{Cheung20011}
+ROLAP
+          o Data is stored in relational databases.
+          o Support extensions to SQL.
+          o Efficiently implement the multidimensional data model and operations.
+          o Ex: Microstrategy.
+MOLAP
+          o Directly store multidimensional data in special data structures (arrays).
+          o Implement the OLAP operations over these special data structures.
+          o Star Schema.
+          o Snowflake Schema. \cite{kimball2009data}
+          o Fact Constellations.
+          o Ex: Essbase (Arbor), statistical DBMSes.
+
+hierachical data clusters \cite{karayannidis2008hierarchical}
 
 \subsection{XML Databases}
 \label{SEC-XML}
