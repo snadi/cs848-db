@@ -49,6 +49,7 @@ This survey presents the different physical design patterns that have been used 
 
 The rest of the survey is organized as follows. Section~\ref{SEC-ELEMENTS} first explains different elements of physical database design. For example, this includes explaining what indexes are and briefly mentioning what the different types of indexes used in information systems are. After explaining the different elements of physical database design, Section~\ref{SEC-DIFFSYS} discusses how each of the four systems uses these elements to improve its efficiency. Sections~\ref{SEC-DDRDB},~\ref{SEC-MMDB},~\ref{SEC-WAREHOUSES},~\ref{SEC-XML} discuss Disk Based Databases, Main Memory Databases, Data Warehouses, and XML Databases respectively. Throughout these sections, comparisons are made as to how the different elements have been modified to fit the needs of each system. Section~\ref{SEC-AUTO} then presents physical database design can be automated. Section~\ref{SEC-OPEN} mentions some of the open problems of physical database design, and suggests possible solutions. Finally Section~\ref{SEC-CONCL} summarizes and concludes this summary.
 
+
 \section{Elements of Physical Database Design}
 \label{SEC-ELEMENTS}
 
@@ -153,7 +154,6 @@ Chen et al.~\cite{chen2001improving} propose using prefetching to improve the pe
 
 \subsection{Data Warehouses}
 \label{SEC-WAREHOUSES}
-\subsubsection*{Background}
 
 OLAP vs OLTP 
 
@@ -183,31 +183,31 @@ Typical Operations
 
 - joins in data warehouses are usualy expensive since the fact table (the largest one) participates in every join \cite{628286}
 
-\subsubsection*{Indexes}
-\paragraph{Tree-based Indexes}
+\subsubsection{Indexes}
+\subsubsection*{Tree-based Indexes}
 B-tree (B+ trees but commonly referred to as B-trees) \cite{253268}, R-tree \cite{602266, Cheung20011}, K-D-B-tree \cite{582321}, BV-tree \cite{223796}, UB-tree \cite{bayer1997universal}
 
-\paragraph{Bitmapped Join Indexes}
+\subsubsection*{Bitmapped Join Indexes}
 \cite{212001}
 
 
-\paragraph{Projection Indexes}
+\subsubsection*{Projection Indexes}
 Involves positional indexing where tuples are accessed based on their ordinal position \cite{628286}
 
-\paragraph{Bit-sliced Indexes}
+\subsection*{Bit-sliced Indexes}
 
 
-\subsubsection*{Partitioning}
+\subsubsection{Partitioning}
 \cite{thusoo2010data}
-\paragraph{Vertical Partitioning}
+\subsubsection*{Vertical Partitioning}
 
-\paragraph{Horizontal Partitioning}
+\subsubsection*{Horizontal Partitioning}
 
-\subsubsection*{Materlized Views}
+\subsubsection{Materlized Views}
 not very useful since most queries are ad-hoc \cite{653447}
 \cite{355309}
 
-\subsubsection*{Data Cubes}
+\subsubsection{Data Cubes}
 \cite{Cheung20011}
 ROLAP
           o Data is stored in relational databases.
@@ -264,6 +264,7 @@ Indexing in the cloud~\cite{wang2010indexing}.
 
 \section{Conclusions}
 \label{SEC-CONCL}
+
 % use section* for acknowledgement
 \section*{Acknowledgment}
 
