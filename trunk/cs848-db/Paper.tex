@@ -55,9 +55,13 @@ The rest of the survey is organized as follows. Section~\ref{SEC-ELEMENTS} first
 
 \subsection{Indexes}
 
-The first physical database design decision to be considered is the choice of indexes to be implemented. The concept of indices has been around for a long time. Just like and index at the end of the book is provided to help find certain content faster, indices in an information system help find content in tables faster. The main idea of an index is to have each record in a table have a unique identifier (primary key) and then organize these identifiers in a certain way that allows for fast access of a specific record. Of course, indexing can be done on any column in the database and not necessarily the primary key. There are many type of indexes that have been used in information systems. 
-
-B-trees (short for Balanced Trees) are the most used database index structure.  The B-tree is essentially similar to the traditional Binary Search Tree, but instead of having one value per node, a B-tee can have many values per node~
+The first physical database design decision to be considered is the choice of indexes to be implemented. The concept of indices has been around for a long time.
+Just like and index at the end of the book is provided to help find certain content faster, indices in an information system help find content in tables faster.
+The main idea of an index is to have each record in a table have a unique identifier (primary key) and then organize these identifiers in a certain way that
+allows for fast access of a specific record. Of course, indexing can be done on any column in the database and not necessarily the primary key. There are many
+type of indexes that have been used in information systems.
+B-trees (short for Balanced Trees) are the most used database index structure.  The B-tree is essentially similar to the traditional Binary Search Tree, but
+instead of having one value per node, a B-tee can have many values per node~
 cite{comer1979ubiquitous} as shown in Figure (PUT A FIGURE FOR A B TREE HERE). B-trees are suitable for relational databases since the cost of retrieval in a B-tree is at most proportional to: $log_{d}\frac{n+1}{2}$. The cost of insertion and deletion is at most proportional to $log_{d}n$ due to the possibility of progressing back up the tree to balance it after an insertion or a deletion. Although B-trees do well in retrieval, deletion and insertion, they do not perform well in sequential search. 
 
 Different variations of B-trees have been used. For example, $B^{+}-trees$ are now the main method of indexing in Disk Based Relational Databases (DRDB). These will be discussed in Section~\ref{SEC-DDRDB}. The T Tree has been proposed for main memory databases, and will be discussed in Section~\ref{SEC-MMDB}. Cache sensitive indexes were then proposed. A variation of T Trees, Cache Sensitive T-Trees (CST-Trees) was introduced, and is also discussed in Section~\ref{SEC-MMDB}. On the same note, Cache Conscious $B^{+}-trees$ and Prefetching $J^{+}-Trees$ are also discussed in Section~\ref{SEC-MMDB}. 
@@ -150,6 +154,11 @@ Rao and Ross~\cite{rao1999cache} show that $B^{+}-trees$ are more cache consciou
 Chen et al.~\cite{chen2001improving} propose using prefetching to improve the performance of $B^{+}-trees$. Since current computer systems can prefetch different data simultaneously, the author take advantage of this. The node size of the $B^{+}-tree$ is made wider than the cache line size. This way, several cache misses can be overlapped at the same time thus improving performance.
 
 \subsubsection*{$J^{+}-trees$ and $pJ^{+}-trees$}
+
+\subsection{Clustering}
+Clustering in disk based systems is important because sequential I/O access is cheaper than random or dispersed I/O access. This is not the case with main
+memory, and so clustering is not needed in MMDB~\cite{garcia1992main, moldovan2008databases}. Therefore, components of one object may be spread across memory
+without impacting performance.
 
 
 \subsection{Data Warehouses}
