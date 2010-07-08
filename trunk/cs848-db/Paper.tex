@@ -78,12 +78,26 @@ Many query optimization techniques have relied on rewriting queries using views 
 
 \subsection{Partitioning}
 
-Partitioning is an important aspect of physical design as it reduces table scanning time. There are two main categories of partitioning: horizontal partitioning and vertical partitioning. Horizontal partitioning divides the table into sets of table rows where each row or record still has all the attributes of the table. For example, dividing the data by date where all data dating less than year 2000 lies in one partition while all data dating more lies in another. On the other hand, vertical partitioning reduces the width of the dataset by storing some attributes in one table, and some in another.
+Partitioning is an important aspect of physical design as it reduces table scanning time. There are two main categories of partitioning: horizontal partitioning
+and vertical partitioning. Horizontal partitioning divides the table into sets of table rows where each row or record still has all the attributes of the table.
+For example, dividing the data by date where all data dating less than year 2000 lies in one partition while all data dating more lies in another. On the other
+hand, vertical partitioning reduces the width of the dataset by storing some attributes in one table, and some in another.
+The main advantage of any type of partitioning is to reduce the amount of time it takes to scan a table which in turn improves performance. For example, if a
+table has 1000 records, and a query is only using the first 20 records then having these 20 records in a partition containing 50 records will save time as
+opposed to examining all the 1000 records. Further classification in partitioning is single vs group horizontal or vertical
+partitioning~\cite{gruenwald1990database}. Horizontal partitioning just divides the data into partitions where each group contains complete tuples. Group
+horizontal partitioning groups tuples that are more frequently used together. Single vertical partitioning divides a relation into groups each of which contains
+only one type of attribute. Group vertical partitioning divides the data vertically such that attributes that are commonly required together are physically
+stored together.
 
-The main advantage of any type of partitioning is to reduce the amount of time it takes to scan a table which in turn improves performance. For example, if a table has 1000 records, and a query is only using the first 20 records then having these 20 records in a partition containing 50 records will save time as opposed to examining all the 1000 records.
 
 \subsection{Clustering}
-When only records satisfying certain criteria are need from a table, it is often unnecessary to scan the whole table. For example, if only records that occrurred in January 2010 are needed, then querying all the table would be an extremely unnecessary overhead. This is where clustering comes in. Clustering relfects how the records are physically located together on disk. Records that are likely to be queried together will be stored physically together to avoid querying the whole table. For the previously mentioned example, the data can be clustered by month, such that all the records of January 2010 are physically in the same page, for example. In this case, only this page will need to be read. As people realized the potential of clustering, multidimensional clustering was introduced where data is clustered based on different criteria at the same time.
+When only records satisfying certain criteria are need from a table, it is often unnecessary to scan the whole table. For example, if only records that occurred
+in January 2010 are needed, then querying all the table would be an extremely unnecessary overhead. This is where clustering comes in. Clustering reflects how
+the records are physically located together on disk. Records that are likely to be queried together will be stored physically together to avoid querying the
+whole table. For the previously mentioned example, the data can be clustered by month, such that all the records of January 2010 are physically in the same
+page, for example. In this case, only this page will need to be read. As
+people realized the potential of clustering, multidimensional clustering was introduced where data is clustered based on different criteria at the same time.
 
 \subsection{Data Compression}
 
@@ -117,7 +131,13 @@ Garcia-Molina and Salem~\cite{garcia1992main} mention some of the challenges inv
 
 \subsubsection{Type of Indexes Used}
 
-Two considerations are taken when designing index structures for MMDB. The first is that the data resides in main memory and not on disk, and so many of the considerations taken for I/O operations is no longer there. The second is having index structures cache conscious. Lots of research work has shown that cache performance is very critical in MMDBs~\cite{rao1999cache, boncz1999database}. This is because the big difference between processor speed and main memory access speed. Thus, a cache miss is still relatively expensive in main memory databases. Accordingly, we will see that many of the index data structures proposed for main memory databases focused on being cache conscious or cache sensitive.
+Two considerations are taken when designing index structures for MMDB. The first is that the data resides in main memory and not on disk, and so many of the
+considerations taken for I/O operations is no longer there. The second is having index structures cache conscious. Lots of research work has shown that cache
+performance is very critical in MMDBs~\cite{rao1999cache, boncz1999database}. This is because the big difference between processor speed and main memory access
+speed. Thus, a cache miss is still relatively expensive in main memory databases. Accordingly, we will see that many of the index data structures proposed for
+main memory databases focused on being cache conscious or cache sensitive.
+
+cite~\cite{dewitt1984implementation}.
 
 \subsubsection*{$B^{+}-Trees$}
 The $B^{+}-Tree$, explained in the previous section, is originally designed for disk based database systems. However, it has also been found useful for main memory databases (REF) as it is cache conscious.
@@ -155,10 +175,22 @@ Chen et al.~\cite{chen2001improving} propose using prefetching to improve the pe
 
 \subsubsection*{$J^{+}-trees$ and $pJ^{+}-trees$}
 
+\subsection{Partitioning}
+
+Partitioning is used in disk based systems to divide the data into the physical pages in a way that will yield the best performance. This could be through
+vertical partitioning or horizontal partitioning, as previously explained. In main memory databases, we do not have the issue of expensive disk access which
+makes partitioning in memory unnecessary as it will not save any costs. However, partionining is needed in the secondary storage of the data on
+disk~\cite{gruenwald1990database}. Disk storage is still used as a backup of main memory databases. When a crash occurs, a reload of the database from disk or
+archive memory takes place. In order to avoid page faults caused by referencing data that is still being reloaded, the reloading process must be designed to be
+efficient in loading the important data such that the database users are not affected. Gruenwald and Eich~\cite{gruenwald1990database,gruenwald1990choosing}
+
+
 \subsection{Clustering}
 Clustering in disk based systems is important because sequential I/O access is cheaper than random or dispersed I/O access. This is not the case with main
 memory, and so clustering is not needed in MMDB~\cite{garcia1992main, moldovan2008databases}. Therefore, components of one object may be spread across memory
 without impacting performance.
+
+
 
 
 \subsection{Data Warehouses}
@@ -197,7 +229,7 @@ Typical Operations
     * Load
     * Refresh
 
-- joins in data warehouses are usualy expensive since the fact table (the largest one) participates in every join \cite{628286}
+- joins in data warehouses are usually expensive since the fact table (the largest one) participates in every join \cite{628286}
 
 \subsubsection{Indexes}
 \paragraph{Tree-based Indexes}
@@ -219,7 +251,7 @@ Involves positional indexing where tuples are accessed based on their ordinal po
 
 \paragraph{Horizontal Partitioning}
 
-\subsubsection{Materlized Views}
+\subsubsection{Materialized Views}
 not very useful since most queries are ad-hoc \cite{653447}
 \cite{355309}
 
@@ -238,7 +270,7 @@ MOLAP
           o Fact Constellations.
           o Ex: Essbase (Arbor), statistical DBMSes.
 
-hierachical data clusters \cite{karayannidis2008hierarchical}
+hierarchical data clusters \cite{karayannidis2008hierarchical}
 
 \subsection{XML Databases}
 \label{SEC-XML}
