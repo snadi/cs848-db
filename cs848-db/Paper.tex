@@ -221,6 +221,20 @@ However, the cache behavior of B+ Trees could still be improved. Therefore, Rao 
 node to improve locality and reduce tree height~\cite{luan2009prefetching}. Since the number of cache misses in search operations is proportional to the height
 of the tree, $CSB^{+}-trees$ have fewer cache misses, and thus better performance.
 
+Chen et al.~\cite{chen2001improving} propose using prefetching to improve the performance of B+ Trees. Since current computer systems can prefetch
+different data simultaneously, the authors take advantage of this. The idea here is to increase the node size of B+ Trees and employ prefectching at the same
+time. In a B+ Tree, every time we move down a level in the tree, a cache miss occurs. Accordingly, prefetching larger sizes nodes means that we can overlap
+multiple cache misses before they occur. This is because in one cache mix, extra data is retrieved in parallel with the originally requested data if it can be
+predicted sufficiently early. Figure~\ref{fig:prefetching} shows how prefetching retrieves the same data in less time. This method, however, does not
+eliminate the full cache miss latency with every level in the tree.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=7cm]{figs/prefetching.png}
+\caption{Performance of various B+ Tree searches where a cache miss to memory takes 150 cycles and a subsequent access can begin 10 cycles
+later~\cite{chen2001improving}}
+\label{fig:prefetching}
+\end{figure}
 
 \subsubsection*{T Trees}
 Lehmen and Carey~\cite{lehman1986study} introduce a new index structure, the T Tree, which combines the features from AVL Trees and B Trees that are suited to
@@ -237,7 +251,7 @@ fit into one node, only the two end keys are used for comparison leading to low 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=9cm]{figs/Ttree.png}
+\includegraphics[width=7cm]{figs/Ttree.png}
 \caption{T Tree by Lehmen and Carey~\cite{lehman1986study}}
 \label{fig:ttree}
 \end{figure}
@@ -262,17 +276,8 @@ that the whole node fits in a cache line. This improves local searching within a
 such that finding the next node happens in $log_{m+1}n$ times rather than $log_{2}n$ times in a binary search tree. However, CSS Trees are only suitable for
 read environments since they eliminate nearly all child pointers, thus removing the support for incremental update.
 
-
-
-\subsubsection*{Prefetching B+ Trees (pB+ Trees)}
-
-Chen et al.~\cite{chen2001improving} propose using prefetching to improve the performance of B+ Trees. Since current computer systems can prefetch
-different data simultaneously, the authors take advantage of this. The idea here is to increase the node size of B+ Trees and employ prefectching at the same
-time. In a B+ Tree, every time we move down a level in the tree, a cache miss occurs. Accordingly, prefetching larger size nodes means that we can overlap
-multiple cache misses before they occur.
-
-
-\subsubsection*{$J^{+}-trees$ and $pJ^{+}-trees$}
+\subsubsection*{J+-trees and pJ+-trees}
+\cite{luan2009prefetching}
 
 \subsection{Partitioning}
 
