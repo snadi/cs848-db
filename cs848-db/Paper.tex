@@ -180,9 +180,10 @@ a specific file.
 \subsection{Main Memory Relational Database System (MMDB)}
 \label{SEC-MMDB}
 
-A Main Memory Database (MMDB) is one where the data resides in the main memory of the system rather than on a disk~\cite{garcia1992main}. It should be noted
-that this is different from caching. Disk based database systems use the main memory to cache query results. However, MMDB's primary copy of the data resides in
-main memory. MMDB have many implementation challenges that have been addressed throughout the research community.
+A Main Memory Database (MMDB) (sometimes referred to as in-memory database) is one where the data resides in the main memory of the system rather than on a
+disk~\cite{garcia1992main}. It should be noted that this is different from caching. Disk based database systems use the main memory to cache query results.
+However, MMDB's primary copy of the data resides in main memory. MMDB have many implementation challenges that have been addressed throughout the research
+community.
 
 
 Garcia-Molina and Salem~\cite{garcia1992main} mention some of the challenges involved. One is concurrency control. In disk based databases, locks are tracked
@@ -206,27 +207,104 @@ Accordingly, we will see that many of the index data structures proposed for mai
 summary, a main memory index should be able to reduce overall computation time while using as little memory as possible~\cite{lehman1986study}. It should also
 be noted that unlike disk based systems where it is advantageous to store actual attribute values in the index, main memory systems do not require that.
 Instead, pointers to the actual attribute values can be used. This, in turn, will reduce the size of the index which is preferable in this case.
+Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB.
 
-cite~\cite{dewitt1984implementation}.
+
+\begin{table}[t!]
+\centering
+\scalebox{0.7}{
+\begin{tabular}{p{2cm}|p{6cm}|p{6cm}}
+\hline
+ & \textbf{Features suitable for MMDB} & \textbf{Cache Consciousness}\\
+\hline\hline
+B Trees &
+\begin{itemize}\item Good storage utilization
+\item Reasonably quick searching
+\item Fast updating
+\end{itemize} 
+& \begin{itemize}\item Reasonable cache behavior if node fits in cache line\end{itemize}\\
+\hline
+B+ Trees & 
+\begin{itemize}
+\item Wastes space since all data is stored in the leaves
+\item Reasonably quick searching
+\item Fast updating
+\end{itemize} &
+\begin{itemize}
+\item Reasonable cache behavior if node fits in cache line\end{itemize}\\
+\hline
+CSB+ Trees & \begin{itemize}
+              \item Same features of B+ Trees
+             \end{itemize} &
+\begin{itemize}
+ \item Good cache performance due to improved locality \& lower tree height
+\end{itemize}\\
+\hline
+pB+ Trees & \begin{itemize}
+              \item Same features of B+ Trees
+             \end{itemize} &
+\begin{itemize}
+ \item Improves cache miss performance by prefetching more data in each cache miss
+\item Node size is also increased leading to the same benefits of CSB+ Trees
+\end{itemize}\\
+\hline
+T Tree &  \begin{itemize}
+              \item Contain pointers to data values instead of the values themselves leading to better space utilization
+\item Node size is bigger leading to previous mentioned advantages
+             \end{itemize} &
+\begin{itemize}
+ \item Cache behavior was not considered at time of design
+\end{itemize}\\
+\hline
+CST & \begin{itemize}
+       \item Fast traversal in $log_{m+1}n$
+      \end{itemize} &
+\begin{itemize}
+ \item Good cache behavior as number of key nodes per line is chosen according to cache line miss.
+\end{itemize}\\
+\hline
+J+ Tree & \begin{itemize}
+       \item 
+      \end{itemize} &
+\begin{itemize}
+ \item 
+\end{itemize}\\
+\hline
+pJ+ Tree & \begin{itemize}
+       \item Fast traversal in $log_{m+1}n$
+      \end{itemize} &
+\begin{itemize}
+ \item
+\end{itemize}\\
+\hline
+\end{tabular}
+}
+\caption{Summary of index structures for Main Memory Databases (MMDB)}
+\label{tab:mmdbindexsumm}
+\end{table}
+
+
+%cite~\cite{dewitt1984implementation}.
 
 \subsubsection*{B Trees}
 Although B Trees, explained in the previous section, are originally designed for disk based database systems, they were found to also be useful in
 MMDB~\cite{lehman1986study}. In disk based systems, the B+ Tree is more used than the regular B Tree. However, in main memory databases, the B Tree would be
-more suitable since there is no gain from keeping all the data in the leaves. In a main memory system, this would only waste space without improving
+more suitable since there is no gain from keeping all the datGood storage utilizationa in the leaves. In a main memory system, this would only waste space
+without improving
 performance. In a B or B+ Tree, multiple keys are used to search within a node. This means that if the node fits in a cache line, this cache load can satisfy
-more than more comparison leading to better cache utilization~\cite{rao1999cache}. Therefore, B Trees in general have good cache behavior.
+more than more comparison leading to better cache utilization~\cite{rao1999cache}. Therefore, B and B+ Trees in general have reasonable cache behavior.
 
 However, the cache behavior of B+ Trees could still be improved. Therefore, Rao and Ross~\cite{rao2000making} propose Cache Sensitive B+-Trees
 ($CSB^{+}-Trees$)~\cite{rao2000making} as an index structure for main memory. To do so, they eliminated most of the child pointers and had more keys in each
 node to improve locality and reduce tree height~\cite{luan2009prefetching}. Since the number of cache misses in search operations is proportional to the height
 of the tree, $CSB^{+}-trees$ have fewer cache misses, and thus better performance.
 
-Chen et al.~\cite{chen2001improving} propose using prefetching to improve the performance of B+ Trees. Since current computer systems can prefetch
-different data simultaneously, the authors take advantage of this. The idea here is to increase the node size of B+ Trees and employ prefectching at the same
-time. In a B+ Tree, every time we move down a level in the tree, a cache miss occurs. Accordingly, prefetching larger sizes nodes means that we can overlap
-multiple cache misses before they occur. This is because in one cache mix, extra data is retrieved in parallel with the originally requested data if it can be
-predicted sufficiently early. Figure~\ref{fig:prefetching} shows how prefetching retrieves the same data in less time. This method, however, does not
-eliminate the full cache miss latency with every level in the tree.
+Chen et al.~\cite{chen2001improving} propose using prefetching to improve the performance of B+ Trees. They call the new index structure prefetching B+ Tree
+(pB+ Tree). Since current computer systems can prefetch different data simultaneously, the authors take advantage of this. The idea here is to increase the node
+size of B+ Trees and employ prefectching at the same time. In a B+ Tree, every time we move down a level in the tree, a cache miss occurs. Accordingly,
+prefetching larger sizes nodes means that we can overlap multiple cache misses before they occur. This is because in one cache miss, extra data is retrieved in
+parallel with the originally requested data if it can be predicted sufficiently early. Figure~\ref{fig:prefetching} shows how prefetching retrieves the same
+data in less time. This method, however, does not eliminate the full cache miss latency with every level in the tree.
 
 \begin{figure}[!t]
 \centering
@@ -263,9 +341,10 @@ with the cache line size. Another problem with T-Trees is that there is a big wa
 Additionally, record pointers stored in the tree take up a lot of space.
 
 To resolve these issues, Lee et al.~\cite{lee2007cst} propose the Cache Sensitive T-Trees (CST-Trees). This is achieved in the following ways. First, a binary
-search tree whose node values are the maximum key of each node in the T Tre is constructed. That way, for a given value, the node containing this value could be
-quickly located through searching the binary tree. Second, the need to store pointers is eliminated by storing the tree in an array and locating the necessary
-nodes through index calculation. Finally, node sizes are aligned with cache line size such that there are no cache misses when accessing data in each binary
+search tree whose node values are the maximum key of each node in the T Tree is constructed. That way, for a given value, the node containing this value could
+be quickly located through searching the binary tree. Second, the need to store pointers is eliminated by storing the tree in an array and locating the
+necessary nodes through index calculation. Finally, node sizes are aligned with cache line size such that there are no cache misses when accessing data in each
+binary
 search tree in the array.
 
 \subsubsection*{Cache Sensitive Search Trees (CSS-Trees)}
@@ -273,13 +352,16 @@ search tree in the array.
 Binary Search Trees have poor cache behavior when the array is much bigger than the cache. Rao and Ross~\cite{rao1999cache} propose the Cache Sensitive Search
 Tree (CSS-Tree) to improve this cache behavior. To do that, the search tree is stored as a directory in an array. The number of keys per node is chosen such
 that the whole node fits in a cache line. This improves local searching within a node to just one cache miss. They also hard-code the traversal within a node
-such that finding the next node happens in $log_{m+1}n$ times rather than $log_{2}n$ times in a binary search tree. However, CSS Trees are only suitable for
-read environments since they eliminate nearly all child pointers, thus removing the support for incremental update.
+such that finding the next node happens in $log_{m+1}n$ times rather than $log_{2}n$ times in a binary search tree where $m$ is the number of keys per node.
+However, CSS Trees are only suitable for read environments since they eliminate nearly all child pointers, thus removing the support for incremental update.
 
 \subsubsection*{J+-trees and pJ+-trees}
 \cite{luan2009prefetching}
 
-\subsection{Partitioning}
+\subsubsection{Materialized Views}
+?????????????????????
+
+\subsubsection{Partitioning}
 
 Partitioning is used in disk based systems to divide the data into the physical pages in a way that will yield the best performance. This could be through
 vertical partitioning or horizontal partitioning, as previously explained. In main memory databases, we do not have the issue of expensive disk access which
@@ -289,7 +371,7 @@ archive memory takes place. In order to avoid page faults caused by referencing 
 efficient in loading the important data such that the database users are not affected. Gruenwald and Eich~\cite{gruenwald1990database,gruenwald1990choosing}
 
 
-\subsection{Clustering}
+\subsubsection{Clustering}
 Clustering in disk based systems is important because sequential I/O access is cheaper than random or dispersed I/O access. This is not the case with main
 memory, and so clustering is not needed in MMDB~\cite{garcia1992main, moldovan2008databases}. Therefore, components of one object may be spread across memory
 without impacting performance.
