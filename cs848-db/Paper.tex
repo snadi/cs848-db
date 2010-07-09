@@ -197,13 +197,15 @@ since they will be stored in main memory anyways so there are no performance gai
 
 Two considerations are taken when designing index structures for MMDB. The first is that the data resides in main memory and not on disk, and so many of the
 considerations taken for I/O operations is no longer there. Instead of focusing on disk access and disk storage, the data structures for main memory
-databases should focus on the efficient use of CPU cycles and memory~\cite{lehman1986study}. The second is having index structures cache conscious. Lots of
-research work has shown that cache performance is very critical in MMDBs~\cite{boncz1999database,rao1999cache}. This is because the big difference between
-processor speed and main memory access speed. Thus, a cache miss is still relatively expensive in main memory databases. Accordingly, we will see that many of
-the index data structures proposed for main memory databases focused on being cache conscious or cache sensitive. In summary, a main memory index should be
-able to reduce overall computation time while using as little memory as possible~\cite{lehman1986study}. It should also be noted that unlike disk based systems
-where it is advantageous to store actual attribute values in the index, main memory systems do not require that. Instead, pointers to the actual attribute
-values can be used. This, in turn, will reduce the size of the index which is preferable in this case.
+databases should focus on the efficient use of CPU cycles and memory~\cite{lehman1986study}. The second is having index structures cache conscious. Cache
+memories improve performance by holding recently referenced data~\cite{smith1982cache}. If the memory reference is found in the cache, then execution proceeds
+at processor speed. Otherwise, the data has to be fetched from main memory. With the big difference between processor speed and main memory speed, cache misses
+are still relatively expensive. Lots of research work has shown that cache performance is very critical in MMDBs~\cite{boncz1999database,rao1999cache}. This is
+because the big difference between processor speed and main memory access speed. Thus, a cache miss is still relatively expensive in main memory databases.
+Accordingly, we will see that many of the index data structures proposed for main memory databases focused on being cache conscious or cache sensitive. In
+summary, a main memory index should be able to reduce overall computation time while using as little memory as possible~\cite{lehman1986study}. It should also
+be noted that unlike disk based systems where it is advantageous to store actual attribute values in the index, main memory systems do not require that.
+Instead, pointers to the actual attribute values can be used. This, in turn, will reduce the size of the index which is preferable in this case.
 
 cite~\cite{dewitt1984implementation}.
 
@@ -211,16 +213,27 @@ cite~\cite{dewitt1984implementation}.
 Although B Trees, explained in the previous section, are originally designed for disk based database systems, they were found to also be useful in
 MMDB~\cite{lehman1986study}. In disk based systems, the B+ Tree is more used than the regular B Tree. However, in main memory databases, the B Tree would be
 more suitable since there is no gain from keeping all the data in the leaves. In a main memory system, this would only waste space without improving
-performance.
+performance. In a B or B+ Tree, multiple keys are used to search within a node. This means that if the node fits in a cache line, this cache load can satisfy
+more than more comparison leading to better cache utilization~\cite{rao1999cache}. Therefore, B Trees in general have good cache behavior.
+
+However, the cache behavior of B+ Trees could still be improved. Therefore, Rao and Ross~\cite{rao2000making} propose Cache Sensitive B+-Trees
+($CSB^{+}-Trees$)~\cite{rao2000making} as an index structure for main memory. To do so, they eliminated most of the child pointers and had more keys in each
+node to improve locality and reduce tree height~\cite{luan2009prefetching}. Since the number of cache misses in search operations is proportional to the height
+of the tree, $CSB^{+}-trees$ have fewer cache misses, and thus better performance.
 
 
 \subsubsection*{T Trees}
-Lehmen and Carey introduce a new index structure, the T Tree, which combines the features from AVL Trees and B Trees that are suited to main memory.
-Figure~\ref{fig:ttree} shows the proposed structure of the T Tree. They run some experiments on data residing in main memory to compare the performance of the T
+Lehmen and Carey~\cite{lehman1986study} introduce a new index structure, the T Tree, which combines the features from AVL Trees and B Trees that are suited to
+main memory. Figure~\ref{fig:ttree} shows the proposed structure of the T Tree. They run some experiments on data residing in main memory to compare the
+performance of the T
 Tree to existing structures. All structures were modified to contain pointers to data values rather than the data values themselves. The structures
 compared included  AVL Trees, simple arrays, B Trees, Chained Bucket Hashing, Extendible Hashing, Linear Hashing and Modified Linear Hashing. Their
 experiments showed that for unordered data, Modified Linear Hashing gave the best performance, and for ordered data, T Trees gave the best performance for a mix
-of searches, inserts and deletes. This is mainly because a T node contains many elements which results in good update and storage characteristics.
+of searches, inserts and deletes. This is mainly because a T node contains many elements which results in good update and storage characteristics. The T Tree
+was the first index structure specifically designed for main memory databases.
+
+Although T Trees have been specifically designed for MMDB, they did not consider the cache behavior at that time~\cite{rao1999cache}. Although many keys are
+fit into one node, only the two end keys are used for comparison leading to low node utilization. Similarly, array binary search trees have the same problem. 
 
 \begin{figure}[!t]
 \centering
@@ -229,18 +242,11 @@ of searches, inserts and deletes. This is mainly because a T node contains many 
 \label{fig:ttree}
 \end{figure}
 
-\subsubsection*{Cache Sensitive Search Trees (CSS-Trees)}
-\cite{rao1999cache}.
-
-
-\subsubsection*{Cache Sensitive T-Trees (CST-Trees)}
-
 T Trees were the main index structure used for main memory databases for some time after their proposal. However, it was discovered that B+-trees outperform
 T-Trees on modern processors because of the growth of cache miss latency relative to processor speed~\cite{rao1999cache,lee2007cst}. This is because the height
 of the tree is high which makes the total number of memory accesses from the root to the leaf node higher. The other reason is that the node size is not aligned
-with the cache line size. The other problem with T-Trees is that there is a big waste of space in the cache because unnecessary data is brought into the cache.
+with the cache line size. Another problem with T-Trees is that there is a big waste of space in the cache because unnecessary data is brought into the cache.
 Additionally, record pointers stored in the tree take up a lot of space.
-
 
 To resolve these issues, Lee et al.~\cite{lee2007cst} propose the Cache Sensitive T-Trees (CST-Trees). This is achieved in the following ways. First, a binary
 search tree whose node values are the maximum key of each node in the T Tre is constructed. That way, for a given value, the node containing this value could be
@@ -248,20 +254,22 @@ quickly located through searching the binary tree. Second, the need to store poi
 nodes through index calculation. Finally, node sizes are aligned with cache line size such that there are no cache misses when accessing data in each binary
 search tree in the array.
 
-\subsubsection*{Cache Sensitive B+ trees (CSB+ Trees)}
+\subsubsection*{Cache Sensitive Search Trees (CSS-Trees)}
 
-Rao and Ross~\cite{rao1999cache} show that $B^{+}-trees$ are more cache conscious than binary search trees and T-Trees which means they are more suited to main
-memory databases. However, traditional B+-Trees still had poor cache performance. Therefore, they propose Cache Sensitive B+-Trees
-($CSB^{+}-Trees$)~\cite{rao2000making} as an index structure for main memory. To do so, they eliminated most of the child pointers and had more keys in each
-node to improve locality and reduce tree height~\cite{luan2009prefetching}. Since the number of cache misses in search operations is proportional to the height
-of the tree, $CSB^{+}-trees$ have fewer cache misses, and thus better performance.
+Binary Search Trees have poor cache behavior when the array is much bigger than the cache. Rao and Ross~\cite{rao1999cache} propose the Cache Sensitive Search
+Tree (CSS-Tree) to improve this cache behavior. To do that, the search tree is stored as a directory in an array. The number of keys per node is chosen such
+that the whole node fits in a cache line. This improves local searching within a node to just one cache miss. They also hard-code the traversal within a node
+such that finding the next node happens in $log_{m+1}n$ times rather than $log_{2}n$ times in a binary search tree. However, CSS Trees are only suitable for
+read environments since they eliminate nearly all child pointers, thus removing the support for incremental update.
 
 
-\subsubsection*{$Prefetching B^{+}-Trees (pB^{+}-trees)$}
 
-Chen et al.~\cite{chen2001improving} propose using prefetching to improve the performance of $B^{+}-trees$. Since current computer systems can prefetch
-different data simultaneously, the author take advantage of this. The node size of the $B^{+}-tree$ is made wider than the cache line size. This way, several
-cache misses can be overlapped at the same time thus improving performance.
+\subsubsection*{Prefetching B+ Trees (pB+ Trees)}
+
+Chen et al.~\cite{chen2001improving} propose using prefetching to improve the performance of B+ Trees. Since current computer systems can prefetch
+different data simultaneously, the authors take advantage of this. The idea here is to increase the node size of B+ Trees and employ prefectching at the same
+time. In a B+ Tree, every time we move down a level in the tree, a cache miss occurs. Accordingly, prefetching larger size nodes means that we can overlap
+multiple cache misses before they occur.
 
 
 \subsubsection*{$J^{+}-trees$ and $pJ^{+}-trees$}
