@@ -299,48 +299,22 @@ without impacting performance.
 
 \subsection{Data Warehouses}
 \label{SEC-WAREHOUSES}
-A data warehouse is a subject-oriented, integrated, time-variant, and non-volatile collection of data and decision support technologies, aimed at enabling the
-knowledge worker (executive, manager, analyst) to make better and faster decisions \cite{560407, 248616}. More than half of IT executives named Data warehousing
-as the highest-priority post-millennium project for them \cite{sen2005comparison}. The value of data warehousing for an organization depends on the
-organization's need for reliable, consolidated, unique and integrated reporting and analysis of its data, at different levels of aggregation.
-
+A data warehouse is a subject-oriented, integrated, time-variant, and non-volatile collection of data and decision support technologies, aimed at enabling the knowledge worker (executive, manager, analyst) to make better and faster decisions \cite{560407, 248616}. More than half of IT executives named Data warehousing as the highest-priority post-millennium project for them \cite{sen2005comparison}. The value of data warehousing for an organization depends on the organization's need for reliable, consolidated, unique and integrated reporting and analysis of its data, at different levels of aggregation.
 
 Data warehousing has been shown useful in many industries: manufacturing (for order shipment and customer support), retail (for user profiling and inventory
 management), financial services (for claims analysis, risk analysis, credit card analysis, and fraud detection), transportation (for fleet management),
 telecommunications (for call analysis and fraud detection), utilities (for power usage analysis), and healthcare (for outcomes analysis) \cite{248616}.
 
+Data warehouses tend to be extremely large, in fact it is quite possible for a data warehouse to store tens of petabytes of data while loading tens of terabytes of data everyday \cite{thusoo2010data}. Datta et al. \cite {628286} notes that the information in a data warehouse is usually multidimensional in nature, requiring the capability to view the data from a variety of perspectives. Aggregated and summarized data become more crucial than detailed records in such environment. Therefore, the workloads are query intensive with mostly ad hoc, complex queries, often requiring computationally expensive operations such as scans, joins, and aggregation. Performing such operations on large amounts of data, like in the case of data warehousing, complicates the situation further. Moreover, the results have to be delivered interactively to the business analyst using the system.
 
-Data warehouses tend to be extremely large, in fact it is quite possible for a data warehouse to store tens of petabytes of data and load tens of terabytes of
-data everyday \cite{thusoo2010data}. Datta et al. \cite {628286} notes that the information in a data warehouse is usually multidimensional in nature, requiring
-the capability to view the data from a variety of perspectives. Aggregated and summarized data become more crucial than detailed records in such environment.
-Therefore, the workloads are query intensive with mostly ad hoc, complex queries, often requiring computationally expensive operations such as scans, joins, and
-aggregation. Performing such operations on large amounts of data, like in the case of data warehousing, complicates the situation further. Moreover, the results
-have to be delivered interactively to the business analyst using the system.
+Although data in a data warehouse is extracted and loaded from multiple on-line transaction processing (OLTP) data sources (including DB2, Oracle, IMS databases, and flat files) using Extract, Transfer, and Load (ETL) tools (see Figure \ref{fig:dw}), a data warehouse is usually maintained seperately from the organization's operational databases \cite{sen2005comparison, 248616}. This architecture can be justified owing to the fact that operational databases are finely tuned to satisfy known OLTP requirements and functionalities which are quite different from that of on-line analytical processing (OLAP) which is supported by data warehousing. Analyzing data for decision support usually requires consolidating data from many heterogeneous sources of varying quality, or use inconsistent representations, codes and formats. Moreover, understanding trends or making predictions requires historical data, whereas operational databases store only current data. In OLAP, there's a need to support multidimensional data models and operations which requires special data organization, access methods, and implementation methods, not generally provided by DBMSs targeted for OLTP \cite{248616}. Finally, in data warehousing, query throughput and response times are more important than transaction throughput which is the major performance metric for operational databases.
 
-
-The data warehouse supports on-line analytical processing (OLAP), the functional and performance requirements of which are quite different from those of the
-on-line transaction processing (OLTP) applications traditionally supported by the operational databases. Given the above challenges, the data warehouse is
-usually maintained separately from the organization’s operational databases \cite{248616}. Query throughput and response times are more important than
-transaction throughput.
-
-OLAP vs OLTP 
-
-OLTP \cite{sen2005comparison}
-
-Data warehouses, in contrast, are targeted for decision support. Historical, summarized and consolidated data is more important than detailed, individual records.
-
-The workloads are query intensive with mostly ad hoc, complex queries that can access millions of records and perform a lot of scans, joins, and aggregates.
-Query throughput and response times are more important than transaction throughput.
-
-
-Operational databases are finely tuned to support known OLTP workloads.
-
-Understanding trends or making predictions requires historical data, whereas operational databases store only current data.
-
-Decision support usually requires consolidating data from many heterogeneous sources of varying quality, or use inconsistent representations, codes and formats.
-
-Supporting the multidimensional data models and operations typical of OLAP requires special data organization, access methods, and implementation methods, not
-generally provided by DBMSs targeted for OLTP.
+\begin{figure}[!t]
+\centering
+\includegraphics[width=9cm]{figs/dw.png}
+\caption{Data Warehousing Architecture \cite{248616}}
+\label{fig:dw}
+\end{figure}
 
 
 
@@ -352,7 +326,7 @@ Typical Operations
     * Load
     * Refresh
 
-- joins in data warehouses are usually expensive since the fact table (the largest one) participates in every join \cite{628286}
+Joins in data warehouses are usually expensive since the fact table (the largest one) participates in every join \cite{628286}
 
 \subsubsection{Indexes}
 \paragraph{Tree-based Indexes}
