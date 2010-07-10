@@ -140,17 +140,20 @@ whole table. For the previously mentioned example, the data can be clustered by 
 page, for example. In this case, only this page will need to be read. As
 people realized the potential of clustering, multidimensional clustering was introduced where data is clustered based on different criteria at the same time.
 
-\subsection{Data Compression}
+\subsection{Other Physical Design Techniques}
 
-\subsection{Other Techniques}
-
-Striping, mirroring, denormalization.
+There are other physical design methods to improve the performance of the information systems~\cite{lightstone2007physical}. For example, data compression can
+be used to make more data fit into a fixed amount of disk space such that it can be access faster. Data striping is used to distribute data that is accessed
+together across multiple disks. This allows the data to be retrieved faster through parallelism. Database reliability is also improved through mirorring which
+involves duplicating the data on multiple disks. Finally, refining the global schema to reflect query and transaction requirements is also sometimes used. This
+is called denormalization.
 
 \section{Physical Design of Different Information Systems}
 \label{SEC-DIFFSYS}
 
 Given the different physical design methods explained in the previous section, we now look at how these methods apply to different types of information systems.
-Mainly, how they apply to Disk-based relational database systems, main memory relational database systems, data warehouses, and XML databases.
+Mainly, how they apply to Disk-based relational database systems, main memory relational database systems, data warehouses, and XML databases. We mainly focus
+on the first four techniques discussed in Section~\ref{SEC-ELEMENTS} as these are the main design decisions involved in physical design.
 
 
 \subsection{Disk Based Relational Database System (DRDB)}
@@ -161,20 +164,15 @@ In relational databases, users specify the actions they want to execute without 
 where the role of physical design comes in. Physical design specifies the access paths used to get data from the tables. This includes which indices to use, and
 in which order to access the tables~\cite{finkelstein1988physical} and so on.
 
-
-
 There are many variations of B-trees. In relational databases, the most popular index is the $B^{+}-tree$. The $B^{+}-tree$ is a variant of the B  tree which is
 becoming the main indexing method supported by many databases such as DB2, Oracle, and SQL Server~cite{lightstone2007physical}. The main difference between the
 $B^{+}-trees$ and the B-tree is that only leaf nodes contain data pointers in a $B^{+}-tree$. (COMPARE COST HERE). In Prefix $B^{+}-trees$, instead of using the
 actual key value of a record, a prefix from the key value is used to decrease the storage size needed which will in turn allow more records to be stored per
 node thus decreasing the height of the tree.
 
-
 The B+tree is the main indexing method used in current relational databases~\cite{lightstone2007physical}. B+trees have been successful in relational databases
 since data is ultimately recorded in files. Since B+trees have a high fanout, they allow less I/O operations to access a specific data record which is stored in
 a specific file.
-
-
 
 \subsection{Main Memory Relational Database System (MMDB)}
 \label{SEC-MMDB}
@@ -193,7 +191,7 @@ MMDB, longer tree structures are used since its cheap to access main memory. Ano
 since they will be stored in main memory anyways so there are no performance gains from storing them in the index itself.
 
 
-\subsubsection{Type of Indexes Used}
+\subsubsection{Index Structures}
 
 Two considerations are taken when designing index structures for MMDB. The first is that the data resides in main memory and not on disk, and so many of the
 considerations taken for I/O operations is no longer there. Instead of focusing on disk access and disk storage, the data structures for main memory
@@ -424,7 +422,7 @@ Typical Operations
 
 Joins in data warehouses are usually expensive since the fact table (the largest one) participates in every join \cite{628286}
 
-\subsubsection{Indexes}
+\subsubsection{Index Structures}
 \paragraph{Tree-based Indexes}
 B-tree (B+ trees but commonly referred to as B-trees) \cite{253268}, R-tree \cite{602266, Cheung20011}, K-D-B-tree \cite{582321}, BV-tree \cite{223796}, UB-tree
 \cite{bayer1997universal}
