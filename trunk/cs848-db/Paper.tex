@@ -99,7 +99,8 @@ and will be discussed in details in Section~\ref{SEC-WAREHOUSES}.
 
 In a large database system, there are usually a few complex queries that require the joining of many large tables. If these queries are frequently run, then the
 database performance is likely to suffer, and users have to wait for a long time to get the results back. If we know these queries beforehand, it makes sense to
-simply store the results of the queries on disk instead of recomputing them each time. This is exactly what materialized views aim to do. By precalculating the
+simply store the results of the queries on disk instead of recomputing them each time. Oracle 8i (SOURCE) introduced materialized views to fit this purpose. By
+precalculating the
 results of a complex query, and storing them in a table on disk, the new table with the results is very likely to be much smaller than the original tables
 decreasing I/O access costs and thus increasing performance~\cite{lightstone2007physical, chaudhuri1998overview}. Once a materialized view exists, the user can
 either explicitly query the materialized view, or enter the original query, and have the query optimizer rewrite the query to use the materialized views instead
@@ -113,8 +114,6 @@ begin with, materialized views consume disk storage which might be limited. The 
 that the views have the most up to date data is tricky, and may outset the benefit of using materialized views if it is not properly designed. Finally, having
 several materialized views may increase the cost of searching for the appropriate view to use during the query optimization stage. Data warehouses heavily rely
 on materialized views since they have many queries with several joins. This will be discussed in details in Section~\ref{SEC-WAREHOUSES}.
-
-
 
 
 
@@ -207,7 +206,10 @@ Accordingly, we will see that many of the index data structures proposed for mai
 summary, a main memory index should be able to reduce overall computation time while using as little memory as possible~\cite{lehman1986study}. It should also
 be noted that unlike disk based systems where it is advantageous to store actual attribute values in the index, main memory systems do not require that.
 Instead, pointers to the actual attribute values can be used. This, in turn, will reduce the size of the index which is preferable in this case.
-Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB.
+
+In this section, we talk about three families of index structures used in MMDB: B Trees, T Trees, and Binary Search Trees. There are more recent index
+structures developed for MMDB such as J+ Trees~\cite{luan2009prefetching}, but which have not gained much popularity, and so we do not discuss them in our
+survey. Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB. 
 
 
 \begin{table}[t!]
@@ -262,21 +264,21 @@ CST & \begin{itemize}
 \begin{itemize}
  \item Good cache behavior as number of key nodes per line is chosen according to cache line miss.
 \end{itemize}\\
-\hline
-J+ Tree & \begin{itemize}
-       \item 
-      \end{itemize} &
-\begin{itemize}
- \item 
-\end{itemize}\\
-\hline
-pJ+ Tree & \begin{itemize}
-       \item Fast traversal in $log_{m+1}n$
-      \end{itemize} &
-\begin{itemize}
- \item
-\end{itemize}\\
-\hline
+%\hline
+%J+ Tree & \begin{itemize}
+%       \item 
+%      \end{itemize} &
+%\begin{itemize}
+% \item 
+%\end{itemize}\\
+%\hline
+%pJ+ Tree & \begin{itemize}
+%       \item Fast traversal in $log_{m+1}n$
+%      \end{itemize} &
+%\begin{itemize}
+% \item
+%\end{itemize}\\
+%\hline
 \end{tabular}
 }
 \caption{Summary of index structures for Main Memory Databases (MMDB)}
@@ -355,11 +357,10 @@ that the whole node fits in a cache line. This improves local searching within a
 such that finding the next node happens in $log_{m+1}n$ times rather than $log_{2}n$ times in a binary search tree where $m$ is the number of keys per node.
 However, CSS Trees are only suitable for read environments since they eliminate nearly all child pointers, thus removing the support for incremental update.
 
-\subsubsection*{J+-trees and pJ+-trees}
-\cite{luan2009prefetching}
-
 \subsubsection{Materialized Views}
-?????????????????????
+From our literature survey, it seems that materialized views are not used in MMDB. This makes sense since the problems materialized views try to address are
+not present in MMDB. That is, the cost of computing complicated join queries is much less in MMDB due to the low cost of accessing the data in memory.
+Accordingly, the maintenance cost of materialized views in MMDB will outweigh their minimal benefit.
 
 \subsubsection{Partitioning}
 
@@ -375,7 +376,6 @@ efficient in loading the important data such that the database users are not aff
 Clustering in disk based systems is important because sequential I/O access is cheaper than random or dispersed I/O access. This is not the case with main
 memory, and so clustering is not needed in MMDB~\cite{garcia1992main, moldovan2008databases}. Therefore, components of one object may be spread across memory
 without impacting performance.
-
 
 
 
