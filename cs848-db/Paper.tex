@@ -242,6 +242,7 @@ CSB+ Trees & \begin{itemize}
  \item Good cache performance due to improved locality \& lower tree height
 \end{itemize}\\
 \hline
+
 pB+ Trees & \begin{itemize}
               \item Same features of B+ Trees
              \end{itemize} &
@@ -262,23 +263,17 @@ CST & \begin{itemize}
        \item Fast traversal in $log_{m+1}n$
       \end{itemize} &
 \begin{itemize}
- \item Good cache behavior as number of key nodes per line is chosen according to cache line miss.
+ \item Good cache behavior as number of key nodes per line is chosen according to cache line miss
 \end{itemize}\\
-%\hline
-%J+ Tree & \begin{itemize}
-%       \item 
-%      \end{itemize} &
-%\begin{itemize}
-% \item 
-%\end{itemize}\\
-%\hline
-%pJ+ Tree & \begin{itemize}
-%       \item Fast traversal in $log_{m+1}n$
-%      \end{itemize} &
-%\begin{itemize}
-% \item
-%\end{itemize}\\
-%\hline
+\hline
+CSS Trees &  \begin{itemize}
+       \item Fast traversal in $log_{m+1}n$ ($m$ is the number of keys per node)
+\item Mainly suitable for read environments
+      \end{itemize} &
+\begin{itemize}
+ \item Good cache behavior since $m$ is chosen to fit in the cache line size
+\end{itemize}\\
+
 \end{tabular}
 }
 \caption{Summary of index structures for Main Memory Databases (MMDB)}
@@ -291,10 +286,10 @@ CST & \begin{itemize}
 \subsubsection*{B Trees}
 Although B Trees, explained in the previous section, are originally designed for disk based database systems, they were found to also be useful in
 MMDB~\cite{lehman1986study}. In disk based systems, the B+ Tree is more used than the regular B Tree. However, in main memory databases, the B Tree would be
-more suitable since there is no gain from keeping all the datGood storage utilizationa in the leaves. In a main memory system, this would only waste space
-without improving
-performance. In a B or B+ Tree, multiple keys are used to search within a node. This means that if the node fits in a cache line, this cache load can satisfy
-more than more comparison leading to better cache utilization~\cite{rao1999cache}. Therefore, B and B+ Trees in general have reasonable cache behavior.
+more suitable from a storage perspective since there is no gain from keeping all the data in the leaves. In a main memory system, this
+would only waste space without improving performance. On the other hand, the B+ Tree uses multiple keys to search within a node. This means that
+if the node fits in a cache line, this cache load can satisfy more than more comparison leading to better cache utilization~\cite{rao1999cache}. Therefore, B+
+Trees in general have reasonable cache behavior.
 
 However, the cache behavior of B+ Trees could still be improved. Therefore, Rao and Ross~\cite{rao2000making} propose Cache Sensitive B+-Trees
 ($CSB^{+}-Trees$)~\cite{rao2000making} as an index structure for main memory. To do so, they eliminated most of the child pointers and had more keys in each
@@ -366,10 +361,14 @@ Accordingly, the maintenance cost of materialized views in MMDB will outweigh th
 
 Partitioning is used in disk based systems to divide the data into the physical pages in a way that will yield the best performance. This could be through
 vertical partitioning or horizontal partitioning, as previously explained. In main memory databases, we do not have the issue of expensive disk access which
-makes partitioning in memory unnecessary as it will not save any costs. However, partionining is needed in the secondary storage of the data on
+makes partitioning in memory unnecessary as it will not save any costs. However, partitioning is needed in the secondary storage of the data on
 disk~\cite{gruenwald1990database}. Disk storage is still used as a backup of main memory databases. When a crash occurs, a reload of the database from disk or
 archive memory takes place. In order to avoid page faults caused by referencing data that is still being reloaded, the reloading process must be designed to be
-efficient in loading the important data such that the database users are not affected. Gruenwald and Eich~\cite{gruenwald1990database,gruenwald1990choosing}
+efficient in loading the important data such that the database users are not affected. An efficient MMDB reload takes into consideration the number of I/Os for
+reload and the number of main memory references during transaction processing. Gruenwald and Eich~\cite{gruenwald1990database,gruenwald1990choosing} show that
+horizontal partitioning is the most suitable when the database performs more modifications than tuple deletions and more selections that projections and joins.
+Single vertical partitioning is chosen in the other cases. They also show that if we just concentrate on the reload performance (i.e the number of I/Os for
+reload), then single vertical partitioning is always the best choice.
 
 
 \subsubsection{Clustering}
