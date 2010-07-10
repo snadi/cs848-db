@@ -70,7 +70,7 @@ design, and suggests possible solutions. Finally Section~\ref{SEC-CONCL} summari
 \section{Elements of Physical Database Design}
 \label{SEC-ELEMENTS}
 
-\subsection{Indexes}
+\subsection{Index Structures}
 
 The first physical database design decision to be considered is the choice of indexes to be implemented. The concept of indices has been around for a long time.
 Just like and index at the end of the book is provided to help find certain content faster, indices in an information system help find content in tables faster.
@@ -188,7 +188,43 @@ through a hash table, but the actual objects on disk do not contain lock informa
 it is cheap to keep a number of bits for that. The next challenge is access methods. In disk-based databases, B-Trees are used to index the data for faster
 access. B-Trees have a short bushy nature to try to decrease the height of the tree to decrease the number of I/O accesses. Since I/O access is not a problem in
 MMDB, longer tree structures are used since its cheap to access main memory. Another point is that data values do not need to be stored in the index itself
-since they will be stored in main memory anyways so there are no performance gains from storing them in the index itself.
+since they will be stored in main memory anyways so there are no performance gains from storing them in the index itself. Table~\ref{tab:mmdbsumm} summarizes
+the physical design elements of MMDBs.
+
+\begin{table}[t!]
+\centering
+\scalebox{0.7}{
+\begin{tabular}{p{3cm}|p{6cm}|p{6cm}}
+\hline
+ \textbf{Physical Design Element} & \textbf{Desired Features} & \textbf{Methods/Structures Used}\\
+\hline\hline
+Index Structures & \begin{itemize}
+                    \item No need to store actual values in index \item Larger node size that is aligned with cache line size for cache consciousness
+                   \end{itemize} & \begin{itemize}
+                                    \item B Tree
+\item B+ Tree
+\item CSB+ Tree
+\item pB+ Tree
+\item T Tree
+\item CST Tree
+\item CSS Tree
+                                   \end{itemize}\\
+\hline
+Materialized Views & \begin{itemize} \item Not needed since processing and memory access is cheap \end{itemize}& N/A\\
+\hline
+Partitioning & \begin{itemize} \item Only needed in secondary storage to speed up reloading in case of a crash \end{itemize} & \begin{itemize}
+                                                                                            \item Horizontal Partitioning
+\item Single Vertical Partitioning
+                                                                                           \end{itemize}\\
+\hline
+Clustering & \begin{itemize} \item Not needed since sequential random or dispersed main memory access is not more expensive than sequential access \end{itemize}
+& N/A
+
+\end{tabular}
+}
+\caption{Summary of physical design of Main Memory Databases (MMDB)}
+\label{tab:mmdbsumm}
+\end{table}
 
 
 \subsubsection{Index Structures}
@@ -215,7 +251,7 @@ survey. Table~\ref{tab:mmdbindexsumm} summarizes the features of the different i
 \scalebox{0.7}{
 \begin{tabular}{p{2cm}|p{6cm}|p{6cm}}
 \hline
- & \textbf{Features suitable for MMDB} & \textbf{Cache Consciousness}\\
+ \textbf{Index Structure} & \textbf{Features suitable for MMDB} & \textbf{Cache Consciousness}\\
 \hline\hline
 B Trees &
 \begin{itemize}\item Good storage utilization
@@ -258,10 +294,11 @@ T Tree &  \begin{itemize}
 \end{itemize}\\
 \hline
 CST & \begin{itemize}
-       \item Fast traversal in $log_{m+1}n$
+       \item Binary search tree for maximum value of each node leads to faster search
+\item More space efficient by removing pointers \& using array storage. Index calculation used to allocate values
       \end{itemize} &
 \begin{itemize}
- \item Good cache behavior as number of key nodes per line is chosen according to cache line miss
+ \item Node size is aligned with cache line size to avoid misses
 \end{itemize}\\
 \hline
 CSS Trees &  \begin{itemize}
