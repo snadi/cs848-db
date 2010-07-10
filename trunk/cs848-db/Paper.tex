@@ -398,6 +398,21 @@ Although data in a data warehouse is extracted and loaded from multiple on-line 
 \end{figure}
 
 
+\cite{Cheung20011}
+ROLAP
+          o Data is stored in relational databases.
+          o support for multi-dimensional view of data is achieved thru star scheme
+          o Support extensions to SQL.
+          o Efficiently implement the multidimensional data model and operations.
+          o Ex: Microstrategy.
+MOLAP
+          o Directly store multidimensional data in special data structures (arrays).
+          o Implement the OLAP operations over these special data structures.
+          o Snowflake Schema. \cite{kimball2009data}
+          o Fact Constellations.
+          o Ex: Essbase (Arbor), statistical DBMSes.
+
+hierarchical data clusters \cite{karayannidis2008hierarchical}
 
 star schema
 fact table
@@ -434,23 +449,6 @@ Involves positional indexing where tuples are accessed based on their ordinal po
 \subsubsection{Materialized Views}
 not very useful since most queries are ad-hoc \cite{653447}
 \cite{355309}
-
-\subsubsection{Data Cubes}
-\cite{Cheung20011}
-ROLAP
-          o Data is stored in relational databases.
-          o Support extensions to SQL.
-          o Efficiently implement the multidimensional data model and operations.
-          o Ex: Microstrategy.
-MOLAP
-          o Directly store multidimensional data in special data structures (arrays).
-          o Implement the OLAP operations over these special data structures.
-          o Star Schema.
-          o Snowflake Schema. \cite{kimball2009data}
-          o Fact Constellations.
-          o Ex: Essbase (Arbor), statistical DBMSes.
-
-hierarchical data clusters \cite{karayannidis2008hierarchical}
 
 \subsection{XML Databases}
 \label{SEC-XML}
