@@ -49,6 +49,7 @@ form of records in files which reside on a physical disk. In this sense, we try 
 queries are answered and executed efficiently. This is reflected in designing proper indexing techniques, partitioning data for more efficient access, designing
 materialized views, data clustering, data compression, striping, mirroring and denormalization~\cite{lightstone2007physical}. 
 
+This includes which indices to use, and in which order to access the tables~\cite{finkelstein1988physical} and so on.
 
 This survey presents the different physical design patterns that have been used in different types of information systems. The systems discussed in this survey
 are disk based relational databases, main memory relational databases, data warehouses, and XML databases. The aim of this survey is not to explain the details
@@ -159,10 +160,12 @@ on the first four techniques discussed in Section~\ref{SEC-ELEMENTS} as these ar
 \subsection{Disk Based Relational Database System (DRDB)}
 \label{SEC-DDRDB}
 
-Relational Databases were first introduced by Codd~\cite{codd1970relational}
-In relational databases, users specify the actions they want to execute without having to worry about how these operations will actually be performed. This is
-where the role of physical design comes in. Physical design specifies the access paths used to get data from the tables. This includes which indices to use, and
-in which order to access the tables~\cite{finkelstein1988physical} and so on.
+Relational Databases were first introduced by Codd~\cite{codd1970relational}. In relational databases, users specify the actions they want to execute without
+having to worry about how these operations will actually be performed. This is where the role of physical design comes in. Physical design specifies the access
+paths used to get data from the tables. 
+
+
+\subsubsection{Index Structures}
 
 There are many variations of B-trees. In relational databases, the most popular index is the $B^{+}-tree$. The $B^{+}-tree$ is a variant of the B  tree which is
 becoming the main indexing method supported by many databases such as DB2, Oracle, and SQL Server~cite{lightstone2007physical}. The main difference between the
