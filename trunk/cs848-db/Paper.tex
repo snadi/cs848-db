@@ -536,18 +536,26 @@ together all the IDs of nodes on a given path, and creating an index for them~\c
 
 \subsubsection{Materialized Views}
 
-The main idea behind using materialized views is to rewrite queries using these views so that they run more efficiently. Given the semi-structured nature of
+The main idea behind using materialized views is to rewrite queries using these views so that they run more efficiently. This is very important in XML
+Databases since XQuery and XPath queries are complicated~\cite{arion2007structured}. The semi-structured nature of
 XML data, and the expressiveness of most XML querying languages, view selection for optimization becomes a more complicated
-problem~\cite{tang2009materialized}. Therefore, the choice of which views to materialize becomes more complicated in XML database. That is, of course, besides
-the difficulty of selecting which views to use for rewriting. However, this problem is not within the scope this survey. Since XPath query processing is
-expensive, materialized views come in handy in XML databases. Balmin et al.~\cite{balmin2004framework} propose a framework for
-using XPath materialized views for XML query processing. (TALK ABOUT IT MORE)
-
+problem~\cite{tang2009materialized}. Therefore, the choice of which views to materialize becomes more complicated in XML database. Much work has been
+done on rewriting XML queries using views~\cite{arion2007structured, balmin2004framework, aouiche2006clustering, tang2008multiple}. However, this problem is not
+within the scope this survey.
 
 \subsubsection{Partitioning}
 In XML-enabled databases, inlining during the shredding of the data such that children nodes that occur only once are stored with the parent node produces
 better partitioned data~\cite{tatarinov2002storing}. Inlining shreds a document into sets of tables according to the document schema which leads to better
-performance because queries tend to access less data. Such inlining is similar to horizontal partitioning~\cite{ramanath2003searching}.
+performance because queries tend to access less data. Such inlining is similar to horizontal partitioning~\cite{ramanath2003searching}. Additionally, it is
+common to horizontally partition the mapped relational tables such that nodes of the same type are stored together~\cite{amer2002overview}.
+
+\subsubsection{Clustering}
+Clustering in XML databases follows the heuristic that sub-elements are likely to be queries with an element~\cite{jagadish2002timber}. Accordingly, elements
+and their subelements are clustered together. In general, storing the XML data in document order it thought to be the best technique for efficient querying.
+Additionally, Lian et al.~\cite{lian2004efficient} suggest clustering XML documents by structural similarity to produce more efficient access. This is done by
+representing the documents as a structure graph (s-graph), and then identifying clusters based on similarity using a clustering algorithm.
+Nayak~\cite{nayak2008fast} also proposes a similar clustering mechanism for XML data. Her technique is also based on structural similarity, but it is more
+focused on the level structure of the XML documents.
 
 \section{Real Databases (incorporate in previous section)}
 
