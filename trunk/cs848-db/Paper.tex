@@ -531,12 +531,23 @@ of the node. Despite the differences in the ways the numbering is constructed, i
 problem is rather how to assign the nodes unique identifiers (the numbers or labels in the numbering schema) that can be used as identifiers in the index to
 reflect the XML document structure.
 
+Besides indexing the actual nodes, path indexing is also common in XML databases since usually queries search for a specific path. This is done by clustering
+together all the IDs of nodes on a given path, and creating an index for them~\cite{milo1999index, arion2008path}.
 
 \subsubsection{Materialized Views}
 
-Since XPath query processing is expensive, materialized views come in handy in XML databases. Balmin et al.~\cite{balmin2004framework} propose a framework for
+The main idea behind using materialized views is to rewrite queries using these views so that they run more efficiently. Given the semi-structured nature of
+XML data, and the expressiveness of most XML querying languages, view selection for optimization becomes a more complicated
+problem~\cite{tang2009materialized}. Therefore, the choice of which views to materialize becomes more complicated in XML database. That is, of course, besides
+the difficulty of selecting which views to use for rewriting. However, this problem is not within the scope this survey. Since XPath query processing is
+expensive, materialized views come in handy in XML databases. Balmin et al.~\cite{balmin2004framework} propose a framework for
 using XPath materialized views for XML query processing. (TALK ABOUT IT MORE)
 
+
+\subsubsection{Partitioning}
+In XML-enabled databases, inlining during the shredding of the data such that children nodes that occur only once are stored with the parent node produces
+better partitioned data~\cite{tatarinov2002storing}. Inlining shreds a document into sets of tables according to the document schema which leads to better
+performance because queries tend to access less data. Such inlining is similar to horizontal partitioning~\cite{ramanath2003searching}.
 
 \section{Real Databases (incorporate in previous section)}
 
