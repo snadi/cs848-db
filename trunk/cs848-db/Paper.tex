@@ -8,22 +8,12 @@
 \usepackage{color}
 \usepackage[pdftex]{hyperref}
 \usepackage{graphicx}
+\usepackage{amssymb}
 
 \begin{document}
-%
-% paper title
-% can use linebreaks \\ within to get better formatting as desired
+
 \title{A Survey of Physical Design Techniques of Information Systems}
 
-
-% author names and affiliations
-% use a multiple column layout for up to three different
-% affiliations
-%\author{\IEEEauthorblockN{Karim Ali, Sarah Nadi}
-%\IEEEauthorblockA{School of Computer Science\\
-%University of Waterloo\\
-%Email: {{karim, snadi}}@uwaterloo.ca}
-%}
 
 \author{Karim Ali and Sarah Nadi\\
 \{karim, snadi\}@cs.uwaterloo.ca \\
@@ -177,6 +167,12 @@ The B+tree is the main indexing method used in current relational databases~\cit
 since data is ultimately recorded in files. Since B+trees have a high fanout, they allow less I/O operations to access a specific data record which is stored in
 a specific file.
 
+MySQL mainly uses B Trees except for spatial data where the R Tree is used (http://dev.mysql.com/doc//refman/5.0/en/mysql-indexes.html)
+
+\sussubsection{Paritioning}
+
+MySQL only supports horizontal partitioning.
+
 \subsection{Main Memory Relational Database System (MMDB)}
 \label{SEC-MMDB}
 
@@ -246,7 +242,9 @@ Instead, pointers to the actual attribute values can be used. This, in turn, wil
 
 In this section, we talk about three families of index structures used in MMDB: B Trees, T Trees, and Binary Search Trees. There are more recent index
 structures developed for MMDB such as J+ Trees~\cite{luan2009prefetching}, but which have not gained much popularity, and so we do not discuss them in our
-survey. Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB. 
+survey. Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB. The T Tree is
+the most used index for MMDB (E.g. MySQL CLuster). However, there are other indexes used as well. For example, IBM's solidDB uses Trie (or prefix tree) for its
+indexing. For their purposes, it served as a good index for main memory since it eliminates the need for many key comparisons~\cite{ibmsoliddb}.
 
 
 \begin{table}[t!]
@@ -379,8 +377,7 @@ To resolve these issues, Lee et al.~\cite{lee2007cst} propose the Cache Sensitiv
 search tree whose node values are the maximum key of each node in the T Tree is constructed. That way, for a given value, the node containing this value could
 be quickly located through searching the binary tree. Second, the need to store pointers is eliminated by storing the tree in an array and locating the
 necessary nodes through index calculation. Finally, node sizes are aligned with cache line size such that there are no cache misses when accessing data in each
-binary
-search tree in the array.
+binary search tree in the array.
 
 \subsubsection*{Cache Sensitive Search Trees (CSS-Trees)}
 
@@ -521,8 +518,9 @@ However, in contrast to XML-enabled databases, the XML data is not first strippe
 identifiers to each node in the XML document. These unique number identifiers allow the determination of any node's parent, sibling or possible child nodes.
 Four index files are created for XML data where all the indexes are based on $B^{+}-trees$. One index manages the collection hierarchy, one index collects nodes
 in a paged file and associates unique node identifiers to the actual nodes, one index indexes elements and attributes, and the last index keeps track of word
-occurrences and is used by the fulltext search extensions.
-
+occurrences and is used by the fulltext search extensions. Oracle uses a similar technique for indexing its XML content where an XMLIndex table is created for
+XML entries~\cite{oracleXML}. This table contains a unique identifier for the XPath leading to the node, the row id of the table used to store the XML data,an
+order key that identifies the hierarchal positioning of the node, a locator key used for fragment extraction, and the text value of the node.
 
 TIMBER also uses a similar numbering schema. There are minor differences between the two numbering techniques, but the main idea is the same. The numbering is
 based on three values of a node: its start label, its end label, and its level (i.e. nested depth). On the other hand, Sedna~\cite{taranov2010sedna} uses a
@@ -530,6 +528,7 @@ different reasoning to produce its numbering schema. Sedna assignes string ident
 of the node. Despite the differences in the ways the numbering is constructed, it seems that that no novel indexing structure is needed for XML databases. The
 problem is rather how to assign the nodes unique identifiers (the numbers or labels in the numbering schema) that can be used as identifiers in the index to
 reflect the XML document structure.
+
 
 Besides indexing the actual nodes, path indexing is also common in XML databases since usually queries search for a specific path. This is done by clustering
 together all the IDs of nodes on a given path, and creating an index for them~\cite{milo1999index, arion2008path}.
@@ -573,16 +572,10 @@ MySQL mostly uses B trees, except for spatial data where R trees are used and ha
 
 Indexing in the cloud~\cite{wang2010indexing}.
 
+Two-Tier Storage DBMS (using disk based and main memory dbs)~\cite{eo2008two}.
+
 \section{Conclusions}
 \label{SEC-CONCL}
-
-% use section* for acknowledgement
-\section*{Acknowledgment}
-
-
-The authors would like to thank...
-
-
 
 %\bibliographystyle{IEEEtran}
 
