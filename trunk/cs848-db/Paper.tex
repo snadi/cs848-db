@@ -21,9 +21,10 @@ David R. Cheriton School of Computer Science\\
 University of Waterloo\\
 }
 
-
+\date{}
 % make the title area
 \maketitle
+
 
 
 \begin{abstract}
@@ -33,33 +34,41 @@ The abstract goes here.
 
 \section{Introduction}
 
-Database users write queries and updates using a "user-friendly" language such as SQL without having to worry about how the underlying data is stored. Physical
+Relational Database Systems have been the most popular type of Information Systems for decades. When we think of designing a database systems, we usually think
+of which data we need to keep track of and how will we properly organize it into meaningful tables. However, this is not the only phase in database design.
+All of our designed tables need to be physically stored on disk. How these tables will be stored and accessed greatly affects the database performance. Physical
 database design is concerned with the actual storage of data on disk. This means how the files are organized, and how they are accessed. Data is stored in the
 form of records in files which reside on a physical disk. In this sense, we try to find the most efficient way possible to store and access the data such that
-queries are answered and executed efficiently. This is reflected in designing proper indexing techniques, partitioning data for more efficient access, designing
-materialized views, data clustering, data compression, striping, mirroring and denormalization~\cite{lightstone2007physical}. 
-
-This includes which indices to use, and in which order to access the tables~\cite{finkelstein1988physical} and so on.
+queries are answered and executed efficiently. In the traditional relational database system, this involved selecting proper indexing techniques,
+partitioning the data for more efficient access, materializing the results of some queries, clustering and compressing the data, and many other
+techniques~\cite{fikelstein1988physical,lightstone2007physical}. The physical design aspects of relational databases have been studied in much detail. However,
+over time, different types of Information Systems have emerged that have different characteristics. For example, most relational databases have been disk-based
+where the primary copy of the data resides on disk. This is as opposed to Main Memory Relational Databases (MMDB) where the primary copy of the data resides in
+main memory and no disk operations are needed to query the data. Such differences pose new requirements for the physical design of these systems.
 
 This survey presents the different physical design patterns that have been used in different types of information systems. The systems discussed in this survey
-are disk based relational databases, main memory relational databases, data warehouses, and XML databases. The aim of this survey is not to explain the details
-of every data structure used in physical design, but rather to compare how the different data structures have been used in these systems. This includes
-explaining how alterations or additions are made to data structures to fit the specific needs of every system. For a complete reference on the details of the
-data structures used in physical database design, please see (CITE HERE). 
+are disk based relational databases (traditional database systems), main memory relational databases, data warehouses, and XML databases. The aim of this survey
+is not to explain the details of every data structure used in physical design, but rather to compare how the different data structures have been used in these
+systems. This includes explaining how alterations or additions are made to data structures to fit the specific needs of every system. For a complete reference
+on the details of the data structures used in physical database design, please see (CITE HERE). Using the different physical design methods used in disk based
+relational database systems, we explore how these methods apply to the other systems and where the differences and similarities lie. 
 
 
-The rest of the survey is organized as follows. Section~\ref{SEC-ELEMENTS} first explains different elements of physical database design. For example, this
-includes explaining what indexes are and briefly mentioning what the different types of indexes used in information systems are. After explaining the different
-elements of physical database design, Section~\ref{SEC-DIFFSYS} discusses how each of the four systems uses these elements to improve its efficiency.
-Sections~\ref{SEC-DDRDB},~\ref{SEC-MMDB},~\ref{SEC-WAREHOUSES},~\ref{SEC-XML} discuss Disk Based Databases, Main Memory Databases, Data Warehouses, and XML
-Databases respectively. Throughout these sections, comparisons are made as to how the different elements have been modified to fit the needs of each system.
-Section~\ref{SEC-AUTO} then presents physical database design can be automated. Section~\ref{SEC-OPEN} mentions some of the open problems of physical database
-design, and suggests possible solutions. Finally Section~\ref{SEC-CONCL} summarizes and concludes this summary.
-
-
+The rest of the survey is organized as follows. Section~\ref{SEC-ELEMENTS} first explains different elements of physical database design based on traditional
+disk-based databases. Section~\ref{SEC-DIFFSYS} then discusses how each of the three other systems uses these elements, as applicable, to improve its
+efficiency.Sections~\ref{SEC-MMDB},~\ref{SEC-XML},~\ref{SEC-WAREHOUSES}, discuss Main Memory Databases, XML Databases, and Data Warehouses
+respectively. Throughout these sections, comparisons are made as to how the different elements have been modified to fit the needs of each system.
+Section~\ref{SEC-AUTO} then presents how the choice of the different physical design techniques can be automated. Section~\ref{SEC-OPEN} mentions some of the
+open problems of physical database design, and suggests possible solutions. Finally Section~\ref{SEC-CONCL} summarizes and concludes this survey.
 
 \section{Elements of Physical Database Design}
 \label{SEC-ELEMENTS}
+
+
+Relational Databases were first introduced by Codd~\cite{codd1970relational}. Disk based Relational Database Systems (RDBMS) are the most common and popular
+type of Information Systems. Since they have been extensively researched and have been around for many decades, we use them as the basis of our comparison. In
+this section, we describe the different elements of physical design in RDBMS. These elements will also be examined in the other systems to see how they apply
+to them.
 
 \subsection{Index Structures}
 
@@ -70,7 +79,8 @@ allows for fast access of a specific record. Of course, indexing can be done on 
 type of indexes that have been used in information systems.
 
 B-trees (short for Balanced Trees) are the most used database index structure.  The B-tree is essentially similar to the traditional Binary Search Tree, but
-instead of having one value per node, a B-tee can have many values per node~\cite{comer1979ubiquitous} as shown in Figure (PUT A FIGURE FOR A B TREE HERE).
+instead of havinsummarizesg one value per node, a B-tee can have many values per node~\cite{comer1979ubiquitous} as shown in Figure (PUT A FIGURE FOR A B TREE
+HERE).
 B-trees are suitable for relational databases since the cost of retrieval in a B-tree is at most proportional to: $log_{d}\frac{n+1}{2}$. The cost of insertion
 and deletion is at most proportional to $log_{d}n$ due to the possibility of progressing back up the tree to balance it after an insertion or a deletion.
 Although B-trees do well in retrieval, deletion and insertion, they do not perform well in sequential search. 
@@ -84,6 +94,25 @@ Section~\ref{SEC-MMDB}. On the same note, Cache Conscious $B^{+}-trees$ and Pref
 
 Of course, there are other indexing techniques used such as hash tables, and bitmap indices. For example, Bitmap indices are commonly used in Data Warehouses,
 and will be discussed in details in Section~\ref{SEC-WAREHOUSES}.
+
+There are many variations of B-trees. In relational databases, the most popular index is the $B^{+}-tree$. The $B^{+}-tree$ is a variant of the B  tree which is
+becoming the main indexing method supported by many databases such as DB2, Oracle, and SQL Server~cite{lightstone2007physical}. The main difference between the
+$B^{+}-trees$ and the B-tree is that only leaf nodes contain data pointers in a $B^{+}-tree$. (COMPARE COST HERE). In Prefix $B^{+}-trees$, instead of using the
+actual key value of a record, a prefix from the key value is used to decrease the storage size needed which will in turn allow more records to be stored per
+node thus decreasing the height of the tree.
+
+The B+tree is the main indexing method used in current relational databases~\cite{lightstone2007physical}. B+trees have been successful in relational databases
+since data is ultimately recorded in files. Since B+trees have a high fanout, they allow less I/O operations to access a specific data record which is stored in
+a specific file.
+
+MySQL mainly uses B Trees except for spatial data where the R Tree is used (http://dev.mysql.com/doc//refman/5.0/en/mysql-indexes.html)
+
+Oracle Database uses B tree indexes and their subtypes such as Index-organized tables, reverse key indexes, descending indexes, B-tree cluster indexes. It also
+uses Bitmap and bitmap join indexes, function based indexes and domain based indexes.
+
+MySQL mostly uses B trees, except for spatial data where R trees are used and hash indexes are used for memory tables.
+
+mention clustered vs. unclustered ?
 
 
 \subsection{Materialized Views}
@@ -105,6 +134,15 @@ begin with, materialized views consume disk storage which might be limited. The 
 that the views have the most up to date data is tricky, and may outset the benefit of using materialized views if it is not properly designed. Finally, having
 several materialized views may increase the cost of searching for the appropriate view to use during the query optimization stage. Data warehouses heavily rely
 on materialized views since they have many queries with several joins. This will be discussed in details in Section~\ref{SEC-WAREHOUSES}.
+There are many variations of B-trees. In relational databases, the most popular index is the $B^{+}-tree$. The $B^{+}-tree$ is a variant of the B  tree which is
+becoming the main indexing method supported by many databases such as DB2, Oracle, and SQL Server~cite{lightstone2007physical}. The main difference between the
+$B^{+}-trees$ and the B-tree is that only leaf nodes contain data pointers in a $B^{+}-tree$. (COMPARE COST HERE). In Prefix $B^{+}-trees$, instead of using the
+actual key value of a record, a prefix from the key value is used to decrease the storage size needed which will in turn allow more records to be stored per
+node thus decreasing the height of the tree.
+
+The B+tree is the main indexing method used in current relational databases~\cite{lightstone2007physical}. B+trees have been successful in relational databases
+since data is ultimately recorded in files. Since B+trees have a high fanout, they allow less I/O operations to access a specific data record which is stored in
+a specific file.
 
 
 
@@ -122,6 +160,8 @@ horizontal partitioning groups tuples that are more frequently used together. Si
 only one type of attribute. Group vertical partitioning divides the data vertically such that attributes that are commonly required together are physically
 stored together.
 
+Put table from database about the diff horizontal partitioning 
+MySQL only supports horizontal partitioning.
 
 \subsection{Clustering}
 When only records satisfying certain criteria are need from a table, it is often unnecessary to scan the whole table. For example, if only records that occurred
@@ -129,7 +169,8 @@ in January 2010 are needed, then querying all the table would be an extremely un
 the records are physically located together on disk. Records that are likely to be queried together will be stored physically together to avoid querying the
 whole table. For the previously mentioned example, the data can be clustered by month, such that all the records of January 2010 are physically in the same
 page, for example. In this case, only this page will need to be read. As
-people realized the potential of clustering, multidimensional clustering was introduced where data is clustered based on different criteria at the same time.
+people realized the potential of clustering, multidimensional clustering was introduced where data is clustered based on different criteria at the same time
+(TALK MORE).
 
 \subsection{Other Physical Design Techniques}
 
@@ -137,41 +178,14 @@ There are other physical design methods to improve the performance of the inform
 be used to make more data fit into a fixed amount of disk space such that it can be access faster. Data striping is used to distribute data that is accessed
 together across multiple disks. This allows the data to be retrieved faster through parallelism. Database reliability is also improved through mirorring which
 involves duplicating the data on multiple disks. Finally, refining the global schema to reflect query and transaction requirements is also sometimes used. This
-is called denormalization.
+is called denormalization. 
 
 \section{Physical Design of Different Information Systems}
 \label{SEC-DIFFSYS}
 
 Given the different physical design methods explained in the previous section, we now look at how these methods apply to different types of information systems.
-Mainly, how they apply to Disk-based relational database systems, main memory relational database systems, data warehouses, and XML databases. We mainly focus
+Mainly, how they apply to Main Memory Relational Database Systems (MMDB), Data Warehouses, and XML databases. We mainly focus
 on the first four techniques discussed in Section~\ref{SEC-ELEMENTS} as these are the main design decisions involved in physical design.
-
-
-\subsection{Disk Based Relational Database System (DRDB)}
-\label{SEC-DDRDB}
-
-Relational Databases were first introduced by Codd~\cite{codd1970relational}. In relational databases, users specify the actions they want to execute without
-having to worry about how these operations will actually be performed. This is where the role of physical design comes in. Physical design specifies the access
-paths used to get data from the tables. 
-
-
-\subsubsection{Index Structures}
-
-There are many variations of B-trees. In relational databases, the most popular index is the $B^{+}-tree$. The $B^{+}-tree$ is a variant of the B  tree which is
-becoming the main indexing method supported by many databases such as DB2, Oracle, and SQL Server~cite{lightstone2007physical}. The main difference between the
-$B^{+}-trees$ and the B-tree is that only leaf nodes contain data pointers in a $B^{+}-tree$. (COMPARE COST HERE). In Prefix $B^{+}-trees$, instead of using the
-actual key value of a record, a prefix from the key value is used to decrease the storage size needed which will in turn allow more records to be stored per
-node thus decreasing the height of the tree.
-
-The B+tree is the main indexing method used in current relational databases~\cite{lightstone2007physical}. B+trees have been successful in relational databases
-since data is ultimately recorded in files. Since B+trees have a high fanout, they allow less I/O operations to access a specific data record which is stored in
-a specific file.
-
-MySQL mainly uses B Trees except for spatial data where the R Tree is used (http://dev.mysql.com/doc//refman/5.0/en/mysql-indexes.html)
-
-\subsubsection{Paritioning}
-
-MySQL only supports horizontal partitioning.
 
 \subsection{Main Memory Relational Database System (MMDB)}
 \label{SEC-MMDB}
@@ -411,6 +425,78 @@ Clustering in disk based systems is important because sequential I/O access is c
 memory, and so clustering is not needed in MMDB~\cite{garcia1992main, moldovan2008databases}. Therefore, components of one object may be spread across memory
 without impacting performance.
 
+\subsection{XML Databases}
+\label{SEC-XML}
+
+XML (eXtensible Markup Language) is increasingly being used as a data exchange format. Accordingly, the ability to store and manage XML documents is needed.
+Salminen and Tompa~\cite{salminen2001requirements} define an XML database as ``a collection of XML documents and their parts, maintained by a system
+having capabilities to manage and control the collection itself and the information represented by that collection.'' Salminena and Tompa also highlight some of
+the requirements of an XML database system. These requirements include dealing with namespaces, Internet resources, querying parts of an XML document, and
+transformations of XML documents.
+
+There are two ways in which an XML database system can be designed. The first is to have the database internally translate the XML document into relational
+tables (XML-enabled databases). The second is to have data structures that can persistently store XML documents (native XML databases). In this section, we will
+discuss how the database's physical design needs to be adapted in both cases. Other challenges such as expressing and executing queries and updates are faced in
+XML database design, but these are beyond the scope of this survey.
+
+
+%eXist~\cite{meier2009exist} and TIMBER~\cite{jagadish2002timber} are two of the famous research efforts to design a native XML database.
+
+\subsubsection{Index Structures}
+
+Despite the special nature of XML documents, the same index structures used in relational databases can still be utilized in XML databases. However, some
+adjustments may need to be made to fit the nature of the XML documents. For XML-enabled databases, XML documents are usually represented as relational tables,
+and then indexed similar to other tables. Pal et al.~\cite{pal2004indexing} describe how this is done in Microsoft SQL Server 2005. To start with, a new data
+type called `XML' was introduced. This data type could contain values of complete XML documents, or just fragments of XML data. First, the different nodes in
+the XML data are labelled with the ORDPATH~\cite{o2004ordpaths} mechanism. The XML data is then shredded into a relational table with five main columns:ORDPATH,
+TAG, NODE\_TYPE, VALUE, and PATH\_ID. This information is then stored in a $B^{+}-tree$ as the primary index of the XML type. Additionally, a secondary index
+can be created on any of the columns of the primary index to speed things up.
+
+
+For native XML databases such as eXist~\cite{meier2009exist} or TIMBER~\cite{jagadish2002timber}, $B^{+}-trees$ were still used to index the XML documents.
+However, in contrast to XML-enabled databases, the XML data is not first stripped into a relational table. eXist uses a number schema to assign unique
+identifiers to each node in the XML document. These unique number identifiers allow the determination of any node's parent, sibling or possible child nodes.
+Four index files are created for XML data where all the indexes are based on $B^{+}-trees$. One index manages the collection hierarchy, one index collects nodes
+in a paged file and associates unique node identifiers to the actual nodes, one index indexes elements and attributes, and the last index keeps track of word
+occurrences and is used by the fulltext search extensions. Oracle uses a similar technique for indexing its XML content where an XMLIndex table is created for
+XML entries~\cite{oracleXML}. This table contains a unique identifier for the XPath leading to the node, the row id of the table used to store the XML data,an
+order key that identifies the hierarchal positioning of the node, a locator key used for fragment extraction, and the text value of the node.
+
+TIMBER also uses a similar numbering schema. There are minor differences between the two numbering techniques, but the main idea is the same. The numbering is
+based on three values of a node: its start label, its end label, and its level (i.e. nested depth). On the other hand, Sedna~\cite{taranov2010sedna} uses a
+different reasoning to produce its numbering schema. Sedna assignes string identifiers to nodes such that they are lexically ordered according to the position
+of the node. Despite the differences in the ways the numbering is constructed, it seems that that no novel indexing structure is needed for XML databases. The
+problem is rather how to assign the nodes unique identifiers (the numbers or labels in the numbering schema) that can be used as identifiers in the index to
+reflect the XML document structure.
+
+
+Besides indexing the actual nodes, path indexing is also common in XML databases since usually queries search for a specific path. This is done by clustering
+together all the IDs of nodes on a given path, and creating an index for them~\cite{milo1999index, arion2008path}.
+
+
+
+\subsubsection{Materialized Views}
+
+The main idea behind using materialized views is to rewrite queries using these views so that they run more efficiently. This is very important in XML
+Databases since XQuery and XPath queries are complicated~\cite{arion2007structured}. The semi-structured nature of
+XML data, and the expressiveness of most XML querying languages, view selection for optimization becomes a more complicated
+problem~\cite{tang2009materialized}. Therefore, the choice of which views to materialize becomes more complicated in XML database. Much work has been
+done on rewriting XML queries using views~\cite{arion2007structured, balmin2004framework, aouiche2006clustering, tang2008multiple}. However, this problem is not
+within the scope this survey.
+
+\subsubsection{Partitioning}
+In XML-enabled databases, inlining during the shredding of the data such that children nodes that occur only once are stored with the parent node produces
+better partitioned data~\cite{tatarinov2002storing}. Inlining shreds a document into sets of tables according to the document schema which leads to better
+performance because queries tend to access less data. Such inlining is similar to horizontal partitioning~\cite{ramanath2003searching}. Additionally, it is
+common to horizontally partition the mapped relational tables such that nodes of the same type are stored together~\cite{amer2002overview}.
+
+\subsubsection{Clustering}
+Clustering in XML databases follows the heuristic that sub-elements are likely to be queries with an element~\cite{jagadish2002timber}. Accordingly, elements
+and their subelements are clustered together. In general, storing the XML data in document order it thought to be the best technique for efficient querying.
+Additionally, Lian et al.~\cite{lian2004efficient} suggest clustering XML documents by structural similarity to produce more efficient access. This is done by
+representing the documents as a structure graph (s-graph), and then identifying clusters based on similarity using a clustering algorithm.
+Nayak~\cite{nayak2008fast} also proposes a similar clustering mechanism for XML data. Her technique is also based on structural similarity, but it is more
+focused on the level structure of the XML documents.
 
 
 \subsection{Data Warehouses}
@@ -485,87 +571,25 @@ Involves positional indexing where tuples are accessed based on their ordinal po
 not very useful since most queries are ad-hoc \cite{653447}
 \cite{355309}
 
-\subsection{XML Databases}
-\label{SEC-XML}
-
-XML (eXtensible Markup Language) is increasingly being used as a data exchange format. Accordingly, the ability to store and manage XML documents is needed.
-Salminen and Tompa~\cite{salminen2001requirements} define an XML database as ``a collection of XML documents and their parts, maintained by a system
-having capabilities to manage and control the collection itself and the information represented by that collection.'' Salminena and Tompa also highlight some of
-the requirements of an XML database system. These requirements include dealing with namespaces, Internet resources, querying parts of an XML document, and
-transformations of XML documents.
-
-There are two ways in which an XML database system can be designed. The first is to have the database internally translate the XML document into relational
-tables (XML-enabled databases). The second is to have data structures that can persistently store XML documents (native XML databases). In this section, we will
-discuss how the database's physical design needs to be adapted in both cases. Other challenges such as expressing and executing queries and updates are faced in
-XML database design, but these are beyond the scope of this survey.
-
-
-%eXist~\cite{meier2009exist} and TIMBER~\cite{jagadish2002timber} are two of the famous research efforts to design a native XML database.
-
-\subsubsection{Index Structures}
-
-Despite the special nature of XML documents, the same index structures used in relational databases can still be utilized in XML databases. However, some
-adjustments may need to be made to fit the nature of the XML documents. For XML-enabled databases, XML documents are usually represented as relational tables,
-and then indexed similar to other tables. Pal et al.~\cite{pal2004indexing} describe how this is done in Microsoft SQL Server 2005. To start with, a new data
-type called `XML' was introduced. This data type could contain values of complete XML documents, or just fragments of XML data. First, the different nodes in
-the XML data are labelled with the ORDPATH~\cite{o2004ordpaths} mechanism. The XML data is then shredded into a relational table with five main columns:ORDPATH,
-TAG, NODE\_TYPE, VALUE, and PATH\_ID. This information is then stored in a $B^{+}-tree$ as the primary index of the XML type. Additionally, a secondary index
-can be created on any of the columns of the primary index to speed things up.
-
-
-For native XML databases such as eXist~\cite{meier2009exist} or TIMBER~\cite{jagadish2002timber}, $B^{+}-trees$ were still used to index the XML documents.
-However, in contrast to XML-enabled databases, the XML data is not first stripped into a relational table. eXist uses a number schema to assign unique
-identifiers to each node in the XML document. These unique number identifiers allow the determination of any node's parent, sibling or possible child nodes.
-Four index files are created for XML data where all the indexes are based on $B^{+}-trees$. One index manages the collection hierarchy, one index collects nodes
-in a paged file and associates unique node identifiers to the actual nodes, one index indexes elements and attributes, and the last index keeps track of word
-occurrences and is used by the fulltext search extensions. Oracle uses a similar technique for indexing its XML content where an XMLIndex table is created for
-XML entries~\cite{oracleXML}. This table contains a unique identifier for the XPath leading to the node, the row id of the table used to store the XML data,an
-order key that identifies the hierarchal positioning of the node, a locator key used for fragment extraction, and the text value of the node.
-
-TIMBER also uses a similar numbering schema. There are minor differences between the two numbering techniques, but the main idea is the same. The numbering is
-based on three values of a node: its start label, its end label, and its level (i.e. nested depth). On the other hand, Sedna~\cite{taranov2010sedna} uses a
-different reasoning to produce its numbering schema. Sedna assignes string identifiers to nodes such that they are lexically ordered according to the position
-of the node. Despite the differences in the ways the numbering is constructed, it seems that that no novel indexing structure is needed for XML databases. The
-problem is rather how to assign the nodes unique identifiers (the numbers or labels in the numbering schema) that can be used as identifiers in the index to
-reflect the XML document structure.
-
-
-Besides indexing the actual nodes, path indexing is also common in XML databases since usually queries search for a specific path. This is done by clustering
-together all the IDs of nodes on a given path, and creating an index for them~\cite{milo1999index, arion2008path}.
-
-\subsubsection{Materialized Views}
-
-The main idea behind using materialized views is to rewrite queries using these views so that they run more efficiently. This is very important in XML
-Databases since XQuery and XPath queries are complicated~\cite{arion2007structured}. The semi-structured nature of
-XML data, and the expressiveness of most XML querying languages, view selection for optimization becomes a more complicated
-problem~\cite{tang2009materialized}. Therefore, the choice of which views to materialize becomes more complicated in XML database. Much work has been
-done on rewriting XML queries using views~\cite{arion2007structured, balmin2004framework, aouiche2006clustering, tang2008multiple}. However, this problem is not
-within the scope this survey.
-
-\subsubsection{Partitioning}
-In XML-enabled databases, inlining during the shredding of the data such that children nodes that occur only once are stored with the parent node produces
-better partitioned data~\cite{tatarinov2002storing}. Inlining shreds a document into sets of tables according to the document schema which leads to better
-performance because queries tend to access less data. Such inlining is similar to horizontal partitioning~\cite{ramanath2003searching}. Additionally, it is
-common to horizontally partition the mapped relational tables such that nodes of the same type are stored together~\cite{amer2002overview}.
-
-\subsubsection{Clustering}
-Clustering in XML databases follows the heuristic that sub-elements are likely to be queries with an element~\cite{jagadish2002timber}. Accordingly, elements
-and their subelements are clustered together. In general, storing the XML data in document order it thought to be the best technique for efficient querying.
-Additionally, Lian et al.~\cite{lian2004efficient} suggest clustering XML documents by structural similarity to produce more efficient access. This is done by
-representing the documents as a structure graph (s-graph), and then identifying clusters based on similarity using a clustering algorithm.
-Nayak~\cite{nayak2008fast} also proposes a similar clustering mechanism for XML data. Her technique is also based on structural similarity, but it is more
-focused on the level structure of the XML documents.
-
-\section{Real Databases (incorporate in previous section)}
-
-Oracle Database uses B tree indexes and their subtypes such as Index-organized tables, reverse key indexes, descending indexes, B-tree cluster indexes. It also
-uses Bitmap and bitmap join indexes, function based indexes and domain based indexes.
-
-
-MySQL mostly uses B trees, except for spatial data where R trees are used and hash indexes are used for memory tables.
 
 \section{Automating Physical Database Design}
 \label{SEC-AUTO}
+
+Choosing which indexes to create, which views to materialize, and how to partition data are hard choices. They are highly dependent on the schema used as well
+as the query workload. The number of combinations of choices that can be made is very large making this task quite tedious and difficult for database
+administrators. Accordingly, researchers have been inclined to find ways to automate these decisions. There were many research efforts done in this
+area(E.g.~\cite{finkelstein1988physical, hammer76selec, frank1992selec}), but most of these efforts suffered from either examining too many configurations, not
+accounting for the query workload, or not considering if the query optimizer will benefit from the proposed configurations or not. Chaudhuri and
+Narasayya~\cite{chadhuri1997selec} were the first to propose an efficient automatic index selection tool that is dependent on the query workload and uses the
+query optimizer to evaluate the proposed configuration. They find the best configuration for the workload by examining each query individually to produce
+single-column indexes then combining these configurations. They then run a greedy algorithm to select the best configuration with the least cost (as determined
+by the query optimizer). They then try to further optimize the configuration by looking for possible multicolumn indexes as a combination of the single-column
+indexes already found. One of the main strengths of this technique was that all these indexes were virtually created such that the query optimizer could use
+them, but without having to incur the cost of physically creating them. This solution was part of the research at Microsoft and was tested in Microsoft SQL
+Server 7.0.
+
+Similarly, IBM~\cite{schiefer1999db2, valentin2000select} suggested a similar technique for their database with some changes such as selecting the order of
+columns within an index based on the order in which the query optimizer evaluates the predicates. 
 
 \section{Open Problems in Physical Database Design}
 \label{SEC-OPEN}
@@ -579,7 +603,7 @@ Two-Tier Storage DBMS (using disk based and main memory dbs)~\cite{eo2008two}.
 
 %\bibliographystyle{IEEEtran}
 
-\bibliographystyle{plain}
+\bibliographystyle{IEEEtran}
 \bibliography{references}
 
 
