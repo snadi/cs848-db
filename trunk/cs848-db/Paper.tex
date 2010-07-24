@@ -606,8 +606,25 @@ not very useful since most queries are ad-hoc \cite{653447}
 \cite{355309}
 
 
-\section{Open Problems in Physical Database Design}
+\section{Open Research Problems in Physical Database Design}
 \label{SEC-OPEN}
+
+Choosing which indexes to create, which views to materialize, and how to partition data are hard choices. They are highly dependent on the schema used as well
+as the query workload. The number of combinations of choices that can be made is very large making this task quite tedious and difficult for database
+administrators. Accordingly, researchers have been inclined to find ways to automate these decisions. There were many early research efforts done in this
+area(E.g.~\cite{finkelstein1988physical, hammer76selec, frank1992selec, chaudhuri1997overview, schiefer1999db2, valentin2000select}), but most of these efforts
+focused on having a static workload. Accordingly, research shifted to more dynamic ways to automate physical design. Initial attempts used an dynamic, on-line
+approaches(E.g.~\cite{bruno2007online, sattler2003, schnaitter2007}) where they observed the changes in the workload and adjusted the design accordingly while
+attempting to predict future behavior based on the observed behavior. To avoid the problems of on-line design, researchers are also currently looking at how to
+perform this dynamic physical design off-line (E.g. ~\cite{hannes2008,agrawal2006}).
+
+A second question is how to characterize
+scenarios or classes of workloads for which constrained dynamic
+physical designs will be beneficial.
+
+Similarly, IBM~\cite{} suggested a similar technique for their database with some changes such as selecting the order of
+columns within an index based on the order in which the query optimizer evaluates the predicates. 
+
 
 Indexing in the cloud~\cite{wang2010indexing}.
 
