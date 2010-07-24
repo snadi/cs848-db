@@ -1,6 +1,5 @@
 \documentclass[12pt,a4paper]{article}
 \usepackage{fullpage}
-\usepackage{multirow}
 
 \usepackage{graphics}
 \usepackage{color}
@@ -8,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{amssymb}
 \usepackage{url}
+\usepackage{multirow}
 
 \begin{document}
 
@@ -41,7 +41,7 @@ Data is stored in the
 form of records in files which reside on a physical disk. In this sense, we try to find the most efficient way possible to store and access the data such that
 queries are answered and executed efficiently. In the traditional relational database system, this involved selecting proper indexing techniques,
 partitioning the data for more efficient access, materializing the results of some queries, clustering and compressing the data, and many other
-techniques~\cite{fikelstein1988physical,lightstone2007physical}. The physical design aspects of relational databases have been studied in much detail. However,
+techniques~\cite{finkelstein1988physical,lightstone2007physical}. The physical design aspects of relational databases have been studied in much detail. However,
 over time, different types of Information Systems have emerged that have different characteristics. For example, most relational databases have been disk-based
 where the primary copy of the data resides on disk. This is as opposed to Main Memory Relational Databases (MMDB) where the primary copy of the data resides in
 main memory and no disk operations are needed to query the data. Such differences pose new requirements for the physical design of these systems.
@@ -58,8 +58,8 @@ The rest of the survey is organized as follows. Section~\ref{SEC-ELEMENTS} first
 disk-based databases. Section~\ref{SEC-DIFFSYS} then discusses how each of the three other systems uses these elements, as
 applicable. Sections~\ref{SEC-MMDB},~\ref{SEC-XML},~\ref{SEC-WAREHOUSES}, discuss Main Memory Databases, XML Databases, and Data Warehouses
 respectively. Throughout these sections, comparisons are made as to how the different elements have been modified to fit the needs of each system.
-Section~\ref{SEC-OPEN} mentions some of the
-open problems of physical database design, and suggests possible solutions. Finally Section~\ref{SEC-CONCL} summarizes and concludes this survey.
+Section~\ref{SEC-OPEN} mentions some of the current
+open problems of physical database design. Finally Section~\ref{SEC-CONCL} summarizes and concludes this survey.
 
 \section{Elements of Physical Database Design}
 \label{SEC-ELEMENTS}
@@ -138,7 +138,9 @@ columns are partitioned together to reduce the size of the table.
 
 The main advantage of any type of partitioning is to reduce the amount of time it takes to scan a table which in turn improves performance. For example, if a
 table has 1000 records, and a query is only using the first 20 records then having these 20 records in a partition containing 50 records will save time as
-opposed to examining all the 1000 records. Horizontal partitioning is more widely used, and is implemented in all current DBMSes. Table~\ref{tab:horpartition}
+opposed to examining all the 1000 records. Horizontal partitioning is more widely used, and is implemented in all current DBMSes. 
+
+%Table~\ref{tab:horpartition}
 shows different categories of horizontal partitioning, and the situations they are suited to. Combining partitioning and indexing can often lead to better
 performance. For example, if List partitioning is used to divide a table by regions and then a bitmap index is used on that table, finding records in the same
 region or state can be much faster. Finally, partitioning the data into different physical devices to achieve parallelism when accessing it can greatly
@@ -147,7 +149,7 @@ increase the performance of the database.
 NEED SOME REFERENCES HERE
 
 \begin{table}[!t]
-\scalebox{0.8}{
+\scalebox{0.7}{
  \begin{tabular}{p{2cm}||p{4cm}|p{4cm}|p{4cm}|p{4cm}}
 & \textbf{Range Partitioning} & \textbf{List Partitioning} & \textbf{Hash Partitioning} & \textbf{Composite Partitioning}\\
 \hline\hline
@@ -155,8 +157,7 @@ NEED SOME REFERENCES HERE
 \hline
 \textbf{Why?} & Disk limits & Group point values & Range/List are N/A & According to needs\\
 \hline
-\textbf{Benefits} & \multicolumn{4}{c}{Partition elimination, Improved administration, Fast roll-in/out, and Implicit clustering }
-\\
+\textbf{Benefits} & \multicolumn{4}{c}{Partition elimination, Improved administration, Fast roll-in/out, and Implicit clustering }\\
 \hline
 \textbf{Example} & \begin{itemize}
                     \item Zip code 
@@ -169,10 +170,10 @@ NEED SOME REFERENCES HERE
 		    \begin{itemize}
 		    \item EmployeeId
 		    \item ProductId
-		    \end{itemize} & Hash then List \\
+		    \end{itemize} &
+		    Hash then List \\
 \hline
 \textbf{RDBMS} & MySQL, DB2, Oracle, PostgreSQL, SQL Server & MySQL, Oracle, PostgreSQL, SQL Server & MySQL, Oracle & MySQL, Oracle\\
-		
 \end{tabular}
 }
 \caption{Types of horizontal partitioning}
@@ -214,12 +215,12 @@ However, MMDB's primary copy of the data resides in main memory. Accessing data 
 performance that disk based systems. However, main memory is more expensive and the size is limited in comparison to disk. However, MMDBs are essential to use
 where some of the collected data cannot, or will not, be stored on disk in the first place. For example, phone switch data may be needed for reasoning with
 other stored data, but it is captured in real time and will not necessarily be stored on disk. MMDB have many implementation challenges that have been addressed
-throughout the research community. These challenges will be discussed throughout this section. Table~\ref{tab:mmdbsumm} summarizes
+throughout the research community. These challenges will be discussed throughout this section. %Table~\ref{tab:mmdbsumm} summarizes
 the physical design elements of MMDBs.
 
 \begin{table}[t!]
 \centering
-\scalebox{0.7}{
+\scalebox{0.9}{
 \begin{tabular}{p{3cm}|p{6cm}|p{6cm}}
 \hline
  \textbf{Physical Design Element} & \textbf{Desired Features} & \textbf{Methods/Structures Used}\\
@@ -270,14 +271,14 @@ Instead, pointers to the actual attribute values can be used. This, in turn, wil
 
 In this section, we talk about three families of index structures used in MMDB: B Trees, T Trees, and Binary Search Trees. There are more recent index
 structures developed for MMDB such as J+ Trees~\cite{luan2009prefetching}, but which have not gained much popularity, and so we do not discuss them in our
-survey. Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB. The T Tree is
+survey. %Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB. The T Tree is
 the most used index for MMDB (E.g. MySQL CLuster). However, there are other indexes used as well. For example, IBM's solidDB uses Trie (or prefix tree) for its
 indexing. For their purposes, it served as a good index for main memory since it eliminates the need for many key comparisons~\cite{ibmsoliddb}.
 
 
-\begin{table}[t!]
+ \begin{table}[t!]
 \centering
-\scalebox{0.7}{
+\scalebox{0.6}{
 \begin{tabular}{p{2cm}|p{6cm}|p{6cm}}
 \hline
  \textbf{Index Structure} & \textbf{Features} & \textbf{Cache Consciousness}\\
@@ -535,20 +536,40 @@ focused on the level structure of the XML documents.
 
 \subsection{Data Warehouses}
 \label{SEC-WAREHOUSES}
-A data warehouse is a subject-oriented, integrated, time-variant, and non-volatile collection of data and decision support technologies, aimed at enabling the knowledge worker (executive, manager, analyst) to make better and faster decisions \cite{560407, 248616}. More than half of IT executives named Data warehousing as the highest-priority post-millennium project for them \cite{sen2005comparison}. The value of data warehousing for an organization depends on the organization's need for reliable, consolidated, unique and integrated reporting and analysis of its data, at different levels of aggregation.
+A data warehouse is a subject-oriented, integrated, time-variant, and non-volatile collection of data and decision support technologies, aimed at enabling the
+knowledge worker (executive, manager, analyst) to make better and faster decisions \cite{560407, chaudhuri1997overview}. More than half of IT executives named
+Data warehousing as the highest-priority post-millennium project for them \cite{sen2005comparison}. The value of data warehousing for an organization depends on
+the organization's need for reliable, consolidated, unique and integrated reporting and analysis of its data, at different levels of aggregation.
+
 
 Data warehousing has been shown useful in many industries: manufacturing (for order shipment and customer support), retail (for user profiling and inventory
 management), financial services (for claims analysis, risk analysis, credit card analysis, and fraud detection), transportation (for fleet management),
-telecommunications (for call analysis and fraud detection), utilities (for power usage analysis), and healthcare (for outcomes analysis) \cite{248616}.
+telecommunications (for call analysis and fraud detection), utilities (for power usage analysis), and healthcare (for outcomes analysis)
+\cite{chaudhuri1997overview}.
 
-Data warehouses tend to be extremely large, in fact it is quite possible for a data warehouse to store tens of petabytes of data while loading tens of terabytes of data everyday \cite{thusoo2010data}. Datta et al. \cite {628286} notes that the information in a data warehouse is usually multidimensional in nature, requiring the capability to view the data from a variety of perspectives. Aggregated and summarized data become more crucial than detailed records in such environment. Therefore, the workloads are query intensive with mostly ad hoc, complex queries, often requiring computationally expensive operations such as scans, joins, and aggregation. Performing such operations on large amounts of data, like in the case of data warehousing, complicates the situation further. Moreover, the results have to be delivered interactively to the business analyst using the system.
+Data warehouses tend to be extremely large, in fact it is quite possible for a data warehouse to store tens of petabytes of data while loading tens of terabytes
+of data everyday \cite{thusoo2010data}. Datta et al. \cite {628286} notes that the information in a data warehouse is usually multidimensional in nature,
+requiring the capability to view the data from a variety of perspectives. Aggregated and summarized data become more crucial than detailed records in such
+environment. Therefore, the workloads are query intensive with mostly ad hoc, complex queries, often requiring computationally expensive operations such as
+scans, joins, and aggregation. Performing such operations on large amounts of data, like in the case of data warehousing, complicates the situation further.
+Moreover, the results have to be delivered interactively to the business analyst using the system.
 
-Although data in a data warehouse is extracted and loaded from multiple on-line transaction processing (OLTP) data sources (including DB2, Oracle, IMS databases, and flat files) using Extract, Transfer, and Load (ETL) tools (see Figure \ref{fig:dw}), a data warehouse is usually maintained seperately from the organization's operational databases \cite{sen2005comparison, 248616}. This architecture can be justified owing to the fact that operational databases are finely tuned to satisfy known OLTP requirements and functionalities which are quite different from that of on-line analytical processing (OLAP) which is supported by data warehousing. Analyzing data for decision support usually requires consolidating data from many heterogeneous sources of varying quality, or use inconsistent representations, codes and formats. Moreover, understanding trends or making predictions requires historical data, whereas operational databases store only current data. In OLAP, there's a need to support multidimensional data models and operations which requires special data organization, access methods, and implementation methods, not generally provided by DBMSs targeted for OLTP \cite{248616}. Finally, in data warehousing, query throughput and response times are more important than transaction throughput which is the major performance metric for operational databases.
+
+Although data in a data warehouse is extracted and loaded from multiple on-line transaction processing (OLTP) data sources (including DB2, Oracle, IMS
+databases, and flat files) using Extract, Transfer, and Load (ETL) tools (see Figure \ref{fig:dw}), a data warehouse is usually maintained seperately from the
+organization's operational databases \cite{sen2005comparison, chaudhuri1997overview}. This architecture can be justified owing to the fact that operational
+databases are finely tuned to satisfy known OLTP requirements and functionalities which are quite different from that of on-line analytical processing (OLAP)
+which is supported by data warehousing. Analyzing data for decision support usually requires consolidating data from many heterogeneous sources of varying
+quality, or use inconsistent representations, codes and formats. Moreover, understanding trends or making predictions requires historical data, whereas
+operational databases store only current data. In OLAP, there's a need to support multidimensional data models and operations which requires special data
+organization, access methods, and implementation methods, not generally provided by DBMSs targeted for OLTP \cite{chaudhuri1997overview}. Finally, in data
+warehousing, query throughput and response times are more important than transaction throughput which is the major performance metric for operational databases.
+
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=9cm]{figs/dw.png}
-\caption{Data Warehousing Architecture \cite{248616}}
+\caption{Data Warehousing Architecture \cite{chaudhuri1997overview}}
 \label{fig:dw}
 \end{figure}
 
@@ -618,17 +639,14 @@ approaches(E.g.~\cite{bruno2007online, sattler2003, schnaitter2007}) where they 
 attempting to predict future behavior based on the observed behavior. To avoid the problems of on-line design, researchers are also currently looking at how to
 perform this dynamic physical design off-line (E.g. ~\cite{hannes2008,agrawal2006}).
 
-A second question is how to characterize
-scenarios or classes of workloads for which constrained dynamic
-physical designs will be beneficial.
-
-Similarly, IBM~\cite{} suggested a similar technique for their database with some changes such as selecting the order of
-columns within an index based on the order in which the query optimizer evaluates the predicates. 
-
+Other problems which are currently being researched include improving I/O operations in database systems by using Solid State Drives (SSD) instead of of Hard
+Disk Drives (HDD)~\cite{lee2009, du2009, lee2008}. SSDs have faster read performance, but perform poorly in random writes. However, for certain applications in
+databases and for databases where random writes are not as frequent, SSDs might be suitable. Using SDDs also seems promising when used for
+transaction logs, and intermediate results of sorting and joining~\cite{lee2008}.
 
 Indexing in the cloud~\cite{wang2010indexing}.
 
-Two-Tier Storage DBMS (using disk based and main memory dbs)~\cite{eo2008two}.
+Two-Tier Storage DBMS (using disk based and main memory dbs)~\cite{eo2008two}. 
 
 \section{Conclusions}
 \label{SEC-CONCL}
@@ -637,6 +655,7 @@ Two-Tier Storage DBMS (using disk based and main memory dbs)~\cite{eo2008two}.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
+
 
 
 
