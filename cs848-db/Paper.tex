@@ -27,8 +27,12 @@ University of Waterloo\\
 
 
 \begin{abstract}
-%\boldmath
-The abstract goes here.
+The physical design decisions taken during database design highly affect the database performance. These design decisions include the index structures used,
+which views can be materialized, how to partition the data etc. These decisions vary by the nature of the system being implemented. For example, the index
+structures used for disk-based database systems differ from those used in a memory-based database system. In this survey, we present the elements of
+physical design in different information systems. We start by describing the physical design of traditional disk-based relational database systems then compare
+it to other types of information systems. Specifically, we look at the physical design of Main Memory Database Systems (MMDB), XML Databases, and Data
+Warehouses. We examine how the specific nature of each of these systems affect its physical design. 
 \end{abstract}
 
 \section{Introduction}
@@ -630,23 +634,32 @@ not very useful since most queries are ad-hoc \cite{653447}
 \section{Open Research Problems in Physical Database Design}
 \label{SEC-OPEN}
 
-Choosing which indexes to create, which views to materialize, and how to partition data are hard choices. They are highly dependent on the schema used as well
+Automating the physical database design choices has been a very attractive area of research that is still receiving lots of attention until now. Choosing which
+indexes to create, which views to materialize, and how to partition data are hard choices. They are highly dependent on the schema used as well
 as the query workload. The number of combinations of choices that can be made is very large making this task quite tedious and difficult for database
 administrators. Accordingly, researchers have been inclined to find ways to automate these decisions. There were many early research efforts done in this
 area(E.g.~\cite{finkelstein1988physical, hammer76selec, frank1992selec, chaudhuri1997overview, schiefer1999db2, valentin2000select}), but most of these efforts
 focused on having a static workload. Accordingly, research shifted to more dynamic ways to automate physical design. Initial attempts used an dynamic, on-line
 approaches(E.g.~\cite{bruno2007online, sattler2003, schnaitter2007}) where they observed the changes in the workload and adjusted the design accordingly while
 attempting to predict future behavior based on the observed behavior. To avoid the problems of on-line design, researchers are also currently looking at how to
-perform this dynamic physical design off-line (E.g. ~\cite{hannes2008,agrawal2006}).
+perform this dynamic physical design off-line (E.g. ~\cite{hannes2008,agrawal2006}). Additionally, finding better evaluation techniques to compare different
+automatic physical design decision is currently being studied~\cite{gebaly2008}.
 
 Other problems which are currently being researched include improving I/O operations in database systems by using Solid State Drives (SSD) instead of of Hard
 Disk Drives (HDD)~\cite{lee2009, du2009, lee2008}. SSDs have faster read performance, but perform poorly in random writes. However, for certain applications in
 databases and for databases where random writes are not as frequent, SSDs might be suitable. Using SDDs also seems promising when used for
 transaction logs, and intermediate results of sorting and joining~\cite{lee2008}.
 
-Indexing in the cloud~\cite{wang2010indexing}.
+Just like all other research areas are moving to the cloud, database systems are moving there too. Accordingly, lots of current research focuses on adapting
+storage techniques and index structures to the cloud. For example, Wang et al. propose a new index structure for indexing mult-dimensional data in the
+cloud~\cite{wang2010indexing}. Lots of work is currently being done in this area. For example, Wu et al.~\cite{wu2010efficient} propose a modified B+tree index
+for datasets stored in each compute node. The exact requirements and solutions for data management in the cloud are still being
+researched~\cite{abadi2009data}, and so this is an area that is expected to receive more attention in the future as cloud computing becomes more prevalent.
 
-Two-Tier Storage DBMS (using disk based and main memory dbs)~\cite{eo2008two}. 
+
+This is by no means an exhaustive list of the problems still being researched in physical database design, but they provide a flavor of the challenges still
+being faced. As shown, as new technologies such as SSDs or cloud computing environments emerge, database systems will need to adapt themselves to either make
+use of them or to be able to cope with the new requirements they pose. 
 
 \section{Conclusions}
 \label{SEC-CONCL}
