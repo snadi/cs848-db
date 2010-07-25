@@ -144,12 +144,13 @@ several materialized views may increase the cost of searching for the appropriat
 
 \subsection{Partitioning}
 
-Partitioning is an important aspect of physical design as it reduces table scanning time \cite{lightstone2007physical}. There are two main categories of
-partitioning: horizontal partitioning and vertical partitioning \cite{agrawal2004integrating}. Horizontal partitioning divides the table into sets of table rows
-where each row or record still has all the attributes of the table \cite{ceri1982horizontal, shin1985partitioning}. For example, dividing the data by date where
-all data dating less than year 2000 lies in one partition while all data dating more lies in another. On the other hand, vertical partitioning reduces the width
-of the dataset by storing some attributes in one table, and some in another. Usually, less frequently queried columns are partitioned together to reduce the
-size of the table, especially in data warehouses where not all the columns of a table are analyzed for decision support.
+Partitioning in physical database design is a method for reducing the workload on any one hardware component, like an individual disk, by partitioning
+(dividing) the data over several disks \cite{lightstone2007physical}. There are two main categories of partitioning: horizontal partitioning and vertical
+partitioning \cite{agrawal2004integrating}. Horizontal partitioning divides the table into sets of table rows where each row or record still has all the
+attributes of the table \cite{ceri1982horizontal, shin1985partitioning}. For example, dividing the data by date where all data dating less than year 2000 lies
+in one partition while all data dating more lies in another. On the other hand, vertical partitioning reduces the width of the dataset by storing some
+attributes in one table, and some in another. Usually, less frequently queried columns are partitioned together to reduce the size of the table, especially in
+data warehouses where not all the columns of a table are analyzed for decision support.
 
 The main advantage of any type of partitioning is to reduce the amount of time it takes to scan a table which in turn improves performance
 \cite{lightstone2007physical}. For example, if a table has 1000 records, and a query is only using the first 20 records then having these 20 records in a
@@ -196,9 +197,23 @@ devices to achieve parallelism when accessing it can greatly increase the perfor
 \end{table}
 
 \subsection{Clustering}
-Clustering reflects how the records are physically located together on disk. This is very important since sequential I/O access is much cheaper than random
-access. Therefore, records that are likely to be queried together should be stored physically together to decrease the number of random I/O accesses.
-MOREEEEEEEEEEEEEEEE
+Clustering is the process of grouping related data together on disk for efficiency of access and maximizing resource utilization. Data clustering benefits from
+the fact that sequential I/O access in physical disks is much cheaper than random access. Therefore, records that are likely to be queried together are
+clustered (stored physically together) to decrease the number of random I/O accesses. Whenever the number of I/O random accesses is decreased, CPU blocks are
+also reduced which result in an overall reduction of CPU costs improving the query performance, especially for multidimensional queries (e.g. group by)
+\cite{lightstone2007physical}. The same concept of data clustering can similarly be applied to multiple dimensions (columns or column attributes) of a table.
+Kennedy et al. \cite{kennedy2005} summarizes the benefits of multidimensional clustering as follows:
+
+\begin{itemize}
+ \item Dramatic reduction in I/O requirements due to clustering.
+ \item Scans on any dimension index provide clustered data access.
+ \item Dimensions/slices can be accessed independently using their block indexes.
+ \item Block index scans can be combined (ANDed, ORed).
+ \item Access to the clustered data is much faster.
+\end{itemize}
+
+On the other hand, defining clustering keys, clustering scheme, and the granularity of clustering which makes the problem of designing an optimal clustering in
+this context has combinatorial complexity, having an extremely large search space \cite{jagadish1999snakes}.
 
 \subsection{Other Physical Design Techniques}
 
@@ -228,7 +243,7 @@ However, MMDB's primary copy of the data resides in main memory. Accessing data 
 performance that disk based systems. However, main memory is more expensive and the size is limited in comparison to disk. However, MMDBs are essential to use
 where some of the collected data cannot, or will not, be stored on disk in the first place. For example, phone switch data may be needed for reasoning with
 other stored data, but it is captured in real time and will not necessarily be stored on disk. MMDB have many implementation challenges that have been addressed
-throughout the research community. These challenges will be discussed throughout this section. %Table~\ref{tab:mmdbsumm} summarizes
+throughout the research community. These challenges will be discussed throughout this section. Table~\ref{tab:mmdbsumm} summarizes
 the physical design elements of MMDBs.
 
 \begin{table}[t!]
@@ -284,7 +299,7 @@ Instead, pointers to the actual attribute values can be used. This, in turn, wil
 
 In this section, we talk about three families of index structures used in MMDB: B Trees, T Trees, and Binary Search Trees. There are more recent index
 structures developed for MMDB such as J+ Trees~\cite{luan2009prefetching}, but which have not gained much popularity, and so we do not discuss them in our
-survey. %Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB. The T Tree is
+survey. Table~\ref{tab:mmdbindexsumm} summarizes the features of the different index structures discussed in this section with respect to MMDB. The T Tree is
 the most used index for MMDB (E.g. MySQL CLuster). However, there are other indexes used as well. For example, IBM's solidDB uses Trie (or prefix tree) for its
 indexing. For their purposes, it served as a good index for main memory since it eliminates the need for many key comparisons~\cite{ibmsoliddb}.
 
@@ -363,9 +378,6 @@ CSS Trees &  \begin{itemize}
 \caption{Summary of index structures for Main Memory Databases (MMDB)}
 \label{tab:mmdbindexsumm}
 \end{table}
-
-
-%cite~\cite{dewitt1984implementation}.
 
 \subsubsection*{B Trees}
 Although B Trees, explained in the previous section, are originally designed for disk based database systems, they were found to also be useful in
@@ -672,8 +684,6 @@ use of them or to be able to cope with the new requirements they pose.
 
 \section{Conclusions}
 \label{SEC-CONCL}
-
-%\bibliographystyle{IEEEtran}
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
