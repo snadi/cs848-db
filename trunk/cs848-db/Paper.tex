@@ -8,7 +8,6 @@
 \usepackage{amssymb}
 \usepackage{url}
 \usepackage{multirow}
-
 \begin{document}
 
 \title{A Survey of Physical Design Techniques of Information Systems}
@@ -37,15 +36,14 @@ Warehouses. We examine how the specific nature of each of these systems affect i
 
 \section{Introduction}
 
-Relational Database Management Systems (RDBMS) have been the most popular type of Information Systems for decades. When we think of designing a database
-system, we usually think of which data we need to keep track of and how will we properly organize it into meaningful tables. However, this is not the only phase
-in database design. All of the designed tables need to be physically stored on disk. How these tables will be stored and accessed greatly affects the database
+Relational Database Management Systems (RDBMS) have been the most popular type of Information Systems for decades. When we think of designing a database system,
+we usually think of which data we need to keep track of and how will we properly organize it into meaningful tables. However, this is not the only phase in
+database design. All of the designed tables need to be physically stored on disk. How these tables will be stored and accessed greatly affects the database
 performance. Physical database design is concerned with the actual storage of data on disk. This means how the files are organized, and how they are accessed.
-Data is stored in the
-form of records in files which reside on a physical disk. In this sense, we try to find the most efficient way possible to store and access the data such that
-queries are answered and executed efficiently. In the traditional relational database system, this involved selecting proper indexing techniques,
-partitioning the data for more efficient access, materializing the results of some queries, clustering and compressing the data, and many other
-techniques~\cite{finkelstein1988physical,lightstone2007physical}. The physical design aspects of relational databases have been studied in much detail. However,
+Data is stored in the form of records in files which reside on a physical disk. In this sense, we try to find the most efficient way possible to store and
+access the data such that queries are answered and executed efficiently. In the traditional relational database system, this involved selecting proper indexing
+techniques, partitioning the data for more efficient access, materializing the results of some queries, clustering and compressing the data, and many other
+techniques \cite{fikelstein1988physical,lightstone2007physical}. The physical design aspects of relational databases have been studied in much detail. However,
 over time, different types of Information Systems have emerged that have different characteristics. For example, most relational databases have been disk-based
 where the primary copy of the data resides on disk. This is as opposed to Main Memory Relational Databases (MMDB) where the primary copy of the data resides in
 main memory and no disk operations are needed to query the data. Such differences pose new requirements for the physical design of these systems.
@@ -54,26 +52,21 @@ This survey presents the different physical design patterns that have been used 
 are disk based relational databases (traditional database systems), main memory relational databases, data warehouses, and XML databases. The aim of this survey
 is not to explain the details of every data structure used in physical design, but rather to compare how the different data structures have been used in these
 systems. This includes explaining how alterations or additions are made to data structures to fit the specific needs of every system. Using the different
-physical design methods used in disk based
-RDBMSs, we explore how these methods apply to the other systems and where the differences and similarities lie. 
+physical design methods used in disk based RDBMSs, we explore how these methods apply to the other systems and where the differences and similarities lie.
 
-
-The rest of the survey is organized as follows. Section~\ref{SEC-ELEMENTS} first explains different elements of physical database design used in traditional
-disk-based databases. Section~\ref{SEC-DIFFSYS} then discusses how each of the three other systems uses these elements, as
-applicable. Sections~\ref{SEC-MMDB},~\ref{SEC-XML},~\ref{SEC-WAREHOUSES}, discuss Main Memory Databases, XML Databases, and Data Warehouses
-respectively. Throughout these sections, comparisons are made as to how the different elements have been modified to fit the needs of each system.
-Section~\ref{SEC-OPEN} mentions some of the current
-open problems of physical database design. Finally Section~\ref{SEC-CONCL} summarizes and concludes this survey.
+The rest of the survey is organized as follows. Section \ref{SEC-ELEMENTS} first explains different elements of physical database design used in traditional
+disk-based databases. Section \ref{SEC-DIFFSYS} then discusses how each of the three other systems uses these elements, as applicable. Sections \ref{SEC-MMDB},
+\ref{SEC-XML}, \ref{SEC-WAREHOUSES}, discuss Main Memory Databases, XML Databases, and Data Warehouses respectively. Throughout these sections, comparisons are
+made as to how the different elements have been modified to fit the needs of each system. Section \ref{SEC-OPEN} mentions some of the open problems of physical
+database design, and suggests possible solutions. Finally, Section \ref{SEC-CONCL} summarizes and concludes this survey.
 
 \section{Elements of Physical Database Design}
 \label{SEC-ELEMENTS}
 
-
-Relational Databases were first introduced by Codd~\cite{codd1970relational}. Disk based Relational Database Management Systems (RDBMS) are the most common and
-popular
-type of Information Systems. Since they have been extensively researched and have been around for many decades, we use them as the basis of our comparison. In
-this section, we describe the different elements of physical design in RDBMS. These elements will also be examined in the other systems to see how they apply
-to them.
+Relational Databases were first introduced by Codd \cite{codd1970relational}. Disk based Relational Database Management Systems (RDBMS) are the most common and
+popular type of Information Systems. Since they have been extensively researched and have been around for many decades, we use them as the basis of our
+comparison. In this section, we describe the different elements of physical design in RDBMS. These elements will also be examined in the other systems to see
+how they apply to them.
 
 \subsection{Index Structures}
 
@@ -84,23 +77,46 @@ allows for fast access of a specific record. Of course, indexing can be done on 
 type of indexes that have been used in information systems.
 
 Btrees (short for Balanced Trees) are the most used database index structure.  The Btree is essentially similar to the traditional Binary Search Tree, but
-instead of having one value per node, a B-tee can have many values per node~\cite{comer1979ubiquitous}. B-trees are suitable for relational databases since the
-cost of retrieval in a B-tree is at most proportional to: $log_{d}\frac{n+1}{2}$. The cost of insertion
-and deletion is at most proportional to $log_{d}n$ due to the possibility of progressing back up the tree to balance it after an insertion or a deletion.
-Although B-trees do well in retrieval, deletion and insertion, they do not perform well in sequential search. 
+instead of having one value per node, a B-tee can have many values per node \cite{comer1979ubiquitous}. B-trees are suitable for relational databases since the
+cost of retrieval in a B-tree is at most proportional to: $log_{d}\frac{n+1}{2}$. The cost of insertion and deletion is at most proportional to $log_{d}n$ due
+to the possibility of progressing back up the tree to balance it after an insertion or a deletion. Although B-trees do well in retrieval, deletion and
+insertion, they do not perform well in sequential search. 
 
+Different variations of B-trees have been used. For example, B+trees are now the main method of indexing in current disk-based Relational Databases
+\cite{lightstone2007physical} such as DB2, Oracle, and SQL Server. The main difference between the B+tree and the Btree is that only leaf nodes contain data
+pointers in a B+tree, and leaf nodes contain pointers to each other as shown in Figure \ref{fig:b+tree}. In Prefix B+trees, instead of using the actual key
+value of a record, a prefix from the key value is used to decrease the storage size needed which will in turn allow more records to be stored per node thus
+decreasing the height of the tree. B+trees have been successful in relational databases since data is ultimately recorded in files. Since B+trees have a high
+fanout, they allow less I/O operations to access a specific data record which is stored in a specific file.
 
-Different variations of B-trees have been used. For example, B+trees are now the main method of indexing in current disk-based Relational
-Databases~\cite{lightstone2007physical} such as DB2, Oracle, and SQL Server. The main difference between the
-B+tree and the Btree is that only leaf nodes contain data pointers in a B+tree, and leaf nodes contain pointers to each other as shown in
-Figure~\ref{fig:b+tree}. In Prefix B+trees, instead of using the
-actual key value of a record, a prefix from the key value is used to decrease the storage size needed which will in turn allow more records to be stored per
-node thus decreasing the height of the tree. B+trees have been successful in relational databases since data is ultimately recorded in files. Since B+trees have
-a high fanout, they allow less I/O operations to access a specific data record which is stored in a specific file.
+Bitmap indices represent another type of index structures that is commonly used and cited in the literature. Using bitmaps as indexes first appeared in the
+literature as part of the architecture of the Model 204 commercial database of Computer Corporation of America for the IBM 370 computer \cite{patrick1987model}.
+A bitmap index structure is based on a bitmap (i.e. bitset or bit array) data structure where individual bits correspond to values in unique records. Given a
+table column $C$ where a record $x$ can have one of six unique values, a traditional bitmap indexe defined for $C$ generates one bitmap vector for each of the
+six different values ($B0-B5$). If the value of $C$ for record $x$ is set to 3, the corresponding bit in vector $B3$ is set to 1. Otherwise the bit is set to 0.
 
-Of course, there are other indexing techniques used such as hash tables, and bitmap indices. EXPLAAAAAAAAIN
+Bitmap indices are best used when the set of possible key values in the index is small with a large number of rows, e.g. gender attribute \cite{212001}.
+Therefore, bitmap indices outperform B+trees for low cardinality attributes. The reason is that given an attribute with low cardinality, defining a B+tree index
+on it means that the tree will have very few leaf nodes, each one storing a very long list of record identifiers (RIDs). On the other hand, defining a
+bitmapindex on that same attribute means that such long lists or RIDs will not be stored, rather bit vectors that represent the distinct attribute values will
+be stored as previously explained. This leads to a direct benefit of consuming less storage space. Moreover, queries in that case can be answered using bit-wise
+logical operatios (e.g. and, or, not) which can improve query performance \cite{253268}. Another advantage of bitmap indices is the ability to perform more
+efficient joins by creating bitmap join indices and using those indices to calculate the result of the join \cite{212001}. Although there are many benefits
+gained from using bitmap indices, they poorly perform during updates. The reason is that when an updates is to be done to a bitmap index, the whole bit vector
+for the index is locked, blocking any access to the index for other operations, then the lock is released when the update is done. That is why bitmap indices
+are usually used for read-mostly databases, a famous example of which are data warehouses (Section \ref{SEC-WAREHOUSES}).
 
-briefly discuss clustered vs. unclustered ?
+Another variation of indexing, a hash table index, often simply known as a hash index is used to organize unordered physical database tables for efficient
+access \cite{lightstone2007physical}. This type of index is usually defined for keys that have unique values in the data records. Creating this index requires
+passing the attribute (key) value to a hash function that maps it to a starting block address (i.e. bucket address). Afterwards, table insertions will be done
+according to the hash function, as well as quering the records later.
+
+In general, indices are a way of organizing the logical structure of a database without altering its physical structure. However, sometimes it is desirable to
+store related records near each other on disk for better locality. This can be achieved through implementing a clustered index on the desired key values.
+Otherwise, the created index is known as non-clustered index. The primary advantage of a clustered index is therefore the ordering of the physical data rows in
+accordance with the index blocks that point to them which. Therefore, fewer data block reads are required to answer a given query. The only caveat with using a
+clustered index is that there can only be one clustered index per table because the physical organization of the table must be fixed
+\cite{lightstone2007physical}.
 
 \begin{figure}[!t]
 \centering
@@ -109,48 +125,43 @@ briefly discuss clustered vs. unclustered ?
 \label{fig:b+tree}
 \end{figure}
 
-
-
 \subsection{Materialized Views}
 
 In a large database system, there are usually a few complex queries that require the joining of many large tables. If these queries are frequently run, then the
 database performance is likely to suffer, and users have to wait for a long time to get the results back. If we know these queries beforehand, it makes sense to
 simply store the results of the queries on disk instead of recomputing them each time. Oracle 8i introduced materialized views to fit this purpose. By
-precalculating the
-results of a complex query, and storing them in a table on disk, the new table with the results is very likely to be much smaller than the original tables
-decreasing I/O access costs and thus increasing performance~\cite{lightstone2007physical, chaudhuri1998overview}. Once a materialized view exists, the user can
-either explicitly query the materialized view, or enter the original query, and have the query optimizer rewrite the query to use the materialized views instead
-of the original tables. Many query optimization techniques have relied on rewriting queries using views (E.g.~\cite{levy1995answering, gupta1995aggregate,
-goldstein2001optimizing,
-abiteboul1998complexity}), but discussing the details of the rewriting process is beyond the scope of this survey.
-
+precalculating the results of a complex query, and storing them in a table on disk, the new table with the results is very likely to be much smaller than the
+original tables decreasing I/O access costs and thus increasing performance \cite{lightstone2007physical, chaudhuri1998overview}. Once a materialized view
+exists, the user can either explicitly query the materialized view, or enter the original query, and have the query optimizer rewrite the query to use the
+materialized views instead of the original tables. Many query optimization techniques have relied on rewriting queries using views (e.g.
+\cite{levy1995answering, gupta1995aggregate, goldstein2001optimizing, abiteboul1998complexity}), but discussing the details of the rewriting process is beyond
+the scope of this survey.
 
 Despite the fact that materialized views provide a significant improvement in performance, we cannot simply create a materialized view for each frequent query.
-First, materialized views consume disk storage which might be limited. The second, and main, problem with materialized views is their maintenance.
-Ensuring
-that the views have the most up to date data is tricky, and may outset the benefit of using materialized views if it is not properly designed. Finally, having
-several materialized views may increase the cost of searching for the appropriate view to use during the query optimization stage. 
+First, materialized views consume disk storage which might be limited. The second, and main, problem with materialized views is their maintenance. Ensuring that
+the views have the most up to date data is tricky, and may outset the benefit of using materialized views if it is not properly designed. Finally, having
+several materialized views may increase the cost of searching for the appropriate view to use during the query optimization stage.
 
 \subsection{Partitioning}
 
-Partitioning is an important aspect of physical design as it reduces table scanning time~\cite{lightstone2007physical}. There are two main categories of
-partitioning: horizontal partitioning
-and vertical partitioning. Horizontal partitioning divides the table into sets of table rows where each row or record still has all the attributes of the table.
-For example, dividing the data by date where all data dating less than year 2000 lies in one partition while all data dating more lies in another. On the other
-hand, vertical partitioning reduces the width of the dataset by storing some attributes in one table, and some in another. Usually, less frequently queried
-columns are partitioned together to reduce the size of the table.
+Partitioning is an important aspect of physical design as it reduces table scanning time \cite{lightstone2007physical}. There are two main categories of
+partitioning: horizontal partitioning and vertical partitioning \cite{agrawal2004integrating}. Horizontal partitioning divides the table into sets of table rows
+where each row or record still has all the attributes of the table \cite{ceri1982horizontal, shin1985partitioning}. For example, dividing the data by date where
+all data dating less than year 2000 lies in one partition while all data dating more lies in another. On the other hand, vertical partitioning reduces the width
+of the dataset by storing some attributes in one table, and some in another. Usually, less frequently queried columns are partitioned together to reduce the
+size of the table, especially in data warehouses where not all the columns of a table are analyzed for decision support.
 
-The main advantage of any type of partitioning is to reduce the amount of time it takes to scan a table which in turn improves performance. For example, if a
-table has 1000 records, and a query is only using the first 20 records then having these 20 records in a partition containing 50 records will save time as
-opposed to examining all the 1000 records. Horizontal partitioning is more widely used, and is implemented in all current DBMSes. 
-
-%Table~\ref{tab:horpartition}
-shows different categories of horizontal partitioning, and the situations they are suited to. Combining partitioning and indexing can often lead to better
-performance. For example, if List partitioning is used to divide a table by regions and then a bitmap index is used on that table, finding records in the same
-region or state can be much faster. Finally, partitioning the data into different physical devices to achieve parallelism when accessing it can greatly
-increase the performance of the database.
-
-NEED SOME REFERENCES HERE
+The main advantage of any type of partitioning is to reduce the amount of time it takes to scan a table which in turn improves performance
+\cite{lightstone2007physical}. For example, if a table has 1000 records, and a query is only using the first 20 records then having these 20 records in a
+partition containing 50 records will save time as opposed to examining all the 1000 records. Horizontal partitioning is more widely used, and is implemented in
+all current DBMSes \cite{mysqlpartitioning, sqlsrvpartitioning, sybasepartitioning, postgrepartitioning, oraclepartitioning, db2partitioning} which explains
+why there exists many flavors of horizontal paritioning techniques. There are three major types of horizontal partitioning: range partitioning
+\cite{dewitt1986gamma}, list partitioning \cite{lightstone2007physical} (which is a variation of range partitioning), and hash partitioning
+\cite{lightstone2007physical}. Of course, one can mix and match those partitioning schemes and come up with a composite partitioning that fits a particular
+situation \cite{lightstone2007physical}. Table \ref{tab:horpartition} shows different categories of horizontal partitioning, and the situations they are suited
+to. Combining partitioning and indexing can often lead to better performance. For example, if List partitioning is used to divide a table by regions and then a
+bitmap index is used on that table, finding records in the same region or state can be much faster. Finally, partitioning the data into different physical
+devices to achieve parallelism when accessing it can greatly increase the performance of the database.
 
 \begin{table}[!t]
 \scalebox{0.7}{
@@ -183,8 +194,6 @@ NEED SOME REFERENCES HERE
 \caption{Types of horizontal partitioning}
 \label{tab:horpartition}
 \end{table}
-
-
 
 \subsection{Clustering}
 Clustering reflects how the records are physically located together on disk. This is very important since sequential I/O access is much cheaper than random
@@ -668,11 +677,6 @@ use of them or to be able to cope with the new requirements they pose.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
-
-
-
-
-
 
 % that's all folks
 \end{document}
