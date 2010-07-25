@@ -17,7 +17,7 @@ MakeIndex=
 QuickBuild=
 
 [document-settings,item:Paper.tex]
-Bookmarks=369
+Bookmarks=381
 Encoding=UTF-8
 Highlighting=LaTeX
 Indentation Mode=
@@ -34,10 +34,10 @@ ReadWrite=true
 
 [item:Paper.tex]
 archive=true
-column=41
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=156
+line=216
 mode=LaTeX
 open=true
 order=0
@@ -54,18 +54,18 @@ order=-1
 
 [item:references.bib]
 archive=true
-column=52
+column=0
 encoding=UTF-8
 highlight=BibTeX
-line=27
+line=1
 mode=BibTeX
 open=true
 order=1
 
 [view-settings,view=0,item:Paper.tex]
-CursorColumn=41
-CursorLine=156
+CursorColumn=0
+CursorLine=216
 
 [view-settings,view=0,item:references.bib]
-CursorColumn=52
-CursorLine=27
+CursorColumn=0
+CursorLine=1
