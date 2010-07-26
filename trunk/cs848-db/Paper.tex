@@ -97,7 +97,7 @@ A bitmap index structure is based on a bitmap (i.e. bitset or bit array) data st
 table column $C$ where a record $x$ can have one of six unique values, a traditional bitmap index defined for $C$ generates one bitmap vector for each of the
 six different values ($B0-B5$). If the value of $C$ for record $x$ is set to 3, the corresponding bit in vector $B3$ is set to 1. Otherwise the bit is set to 0.
 
-Bitmap indices are best used when the set of possible key values in the index is small with a large number of rows, e.g. gender attribute \cite{212001}.
+Bitmap indices are best used when the set of possible key values in the index is small with a large number of rows, e.g. gender attribute \cite{oneil1995multi}.
 Therefore, bitmap indices outperform B+trees for low cardinality attributes. The reason is that given an attribute with low cardinality, defining a B+tree index
 on it means that the tree will have very few leaf nodes, each one storing a very long list of record identifiers (RIDs). On the other hand, defining a
 bitmap index on that same attribute means that such long lists or RIDs will not be stored, rather bit vectors that represent the distinct attribute values will
@@ -511,26 +511,25 @@ focused on the level structure of the XML documents.
 \subsection{Data Warehouses}
 \label{SEC-WAREHOUSES}
 A data warehouse is a subject-oriented, integrated, time-variant, and non-volatile collection of data and decision support technologies, aimed at enabling the
-knowledge worker (executive, manager, analyst) to make better and faster decisions \cite{560407, chaudhuri1997overview}. More than half of IT executives named
-Data warehousing as the highest-priority post-millennium project for them \cite{sen2005comparison}. The value of data warehousing for an organization depends on
-the organization's need for reliable, consolidated, unique and integrated reporting and analysis of its data, at different levels of aggregation.
-
+knowledge worker (executive, manager, analyst) to make better and faster decisions \cite{inmon2002building, chaudhuri1997overview}. More than half of IT
+executives named Data warehousing as the highest-priority post-millennium project for them \cite{sen2005comparison}. The value of data warehousing for an
+organization depends on the organization's need for reliable, consolidated, unique and integrated reporting and analysis of its data, at different levels of
+aggregation.
 
 Data warehousing has been shown useful in many industries: manufacturing (for order shipment and customer support), retail (for user profiling and inventory
 management), financial services (for claims analysis, risk analysis, credit card analysis, and fraud detection), transportation (for fleet management),
-telecommunications (for call analysis and fraud detection), utilities (for power usage analysis), and health care (for outcomes analysis)
+telecommunications (for call analysis and fraud detection), utilities (for power usage analysis), and healthcare (for outcomes analysis)
 \cite{chaudhuri1997overview}.
 
 Data warehouses tend to be extremely large, in fact it is quite possible for a data warehouse to store tens of petabytes of data while loading tens of terabytes
-of data everyday \cite{thusoo2010data}. Datta et al. \cite {628286} notes that the information in a data warehouse is usually multidimensional in nature,
-requiring the capability to view the data from a variety of perspectives. Aggregated and summarized data become more crucial than detailed records in such
-environment. Therefore, the workloads are query intensive with mostly ad hoc, complex queries, often requiring computationally expensive operations such as
+of data everyday \cite{thusoo2010data}. Datta et al. \cite {datta2002parallel} notes that the information in a data warehouse is usually multidimensional in
+nature, requiring the capability to view the data from a variety of perspectives. Aggregated and summarized data become more crucial than detailed records in
+such environment. Therefore, the workloads are query intensive with mostly ad hoc, complex queries, often requiring computationally expensive operations such as
 scans, joins, and aggregation. Performing such operations on large amounts of data, like in the case of data warehousing, complicates the situation further.
 Moreover, the results have to be delivered interactively to the business analyst using the system.
 
-
 Although data in a data warehouse is extracted and loaded from multiple on-line transaction processing (OLTP) data sources (including DB2, Oracle, IMS
-databases, and flat files) using Extract, Transfer, and Load (ETL) tools (see Figure \ref{fig:dw}), a data warehouse is usually maintained separately from the
+databases, and flat files) using Extract, Transfer, and Load (ETL) tools (Figure \ref{fig:dw}), a data warehouse is usually maintained seperately from the
 organization's operational databases \cite{sen2005comparison, chaudhuri1997overview}. This architecture can be justified owing to the fact that operational
 databases are finely tuned to satisfy known OLTP requirements and functionalities which are quite different from that of on-line analytical processing (OLAP)
 which is supported by data warehousing. Analyzing data for decision support usually requires consolidating data from many heterogeneous sources of varying
@@ -539,7 +538,6 @@ operational databases store only current data. In OLAP, there's a need to suppor
 organization, access methods, and implementation methods, not generally provided by DBMSs targeted for OLTP \cite{chaudhuri1997overview}. Finally, in data
 warehousing, query throughput and response times are more important than transaction throughput which is the major performance metric for operational databases.
 
-
 \begin{figure}[!t]
 \centering
 \includegraphics[width=9cm]{figs/dw.png}
@@ -547,59 +545,80 @@ warehousing, query throughput and response times are more important than transac
 \label{fig:dw}
 \end{figure}
 
+The design of a data warehouse can follow one of two paradigms: relational-based OLAP (ROLAP) or multidimensional OLAP (MOLAP). In ROLAP, data is stored in
+relational databases and the support for multidimensional data is achieved through the use of the star schema \cite{cheung2001towards}. A star schema (Figure
+\ref{fig:starschema}) is a database schema where a fact table $T$ that holds the base data in the database. Other tables in the database are dimensions for
+table $T$, where each dimension table is linked to the fact table through foreign keys in $T$ pointing to the primary keys in the dimension tables. Thus, the
+fact table, which is always the largest table in such schema, participates in almost all join operations \cite{datta2002parallel}. This might enforce some
+design decisions for which indices to use, whether materialized views should be implemented to reduce the overhead of such expensive join operation or not. In
+MOLAP, multidimensional data is directly stored in special data structures (arrays) forming data cubes where each side of the cube reflect a dimension of the
+base data. OLAP operations are implemented on top of these special data structures. Usually a snowflake schema \cite{kimball2009data} or fact constellations are
+used to logically design the data warehouse.
 
-\cite{Cheung20011}
-ROLAP
-          o Data is stored in relational databases.
-          o support for multi-dimensional view of data is achieved thru star scheme
-          o Support extensions to SQL.
-          o Efficiently implement the multidimensional data model and operations.
-          o Ex: Microstrategy.
-MOLAP
-          o Directly store multidimensional data in special data structures (arrays).
-          o Implement the OLAP operations over these special data structures.
-          o Snowflake Schema. \cite{kimball2009data}
-          o Fact Constellations.
-          o Ex: Essbase (Arbor), statistical DBMSes.
+The rest of this section will discuss how such challenges and requirements of data warehouse design affect the selection of physical design elements during the
+design process.
 
-hierarchical data clusters \cite{karayannidis2008hierarchical}.
-
-star schema
-fact table
-
-Typical Operations
-    * Data Cleaning
-    * Load
-    * Refresh
-
-Joins in data warehouses are usually expensive since the fact table (the largest one) participates in every join \cite{628286}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=9cm]{figs/starschema.png}
+\caption{An example of a star schema}
+\label{fig:starschema}
+\end{figure}
 
 \subsubsection{Index Structures}
-\paragraph{Tree-based Indexes}
-B-tree (B+ trees but commonly referred to as B-trees) \cite{253268}, R-tree \cite{602266, Cheung20011}, K-D-B-tree \cite{582321}, BV-tree \cite{223796}, UB-tree
-\cite{bayer1997universal}
+Despite the design challenges involved in data warehousing, some relational index structures are still used after adapting them to match those challenges. 
 
+\paragraph{Tree-based Indices}
+The widely used B-trees have been modified to suit the requirements of a data warehouse design, such modification resulted in various tree-based indices:
+UB-trees, BV-trees, K-D-B-trees, and R-trees. A UB-tree index \cite{bayer1997universal} is a variation of B+trees where support for multidimensional data is
+provided by linearizing such data to be able to store it in one dimension. Usually the Z-order (Morton-order) \cite{morton1966computer} is used to perform this
+type of linearization. UB-trees inherit the advantages of B+trees, so they are well suited for high cardinality attributes. They are also excellent for point
+and interval queries (using the pointer in each leaf node to the next leaf node for faster index traversal). UB-trees also inherit the disadvantages of
+B+trees. Therefore, they poorly perform for low cardinality attributes.
 
-\paragraph{Bitmapped Join Indexes}
-\cite{212001}
+A BV-tree \cite{freeston1995general} is an unbalanced tree that maintains the characteristics of the B-tree in $n$ dimensions, and it can be degenerated to a
+balanced tree in the one-dimensional case. A BV-tree index was an attempt to solve the problem of generalizing the characteristics of a B-tree index in $n$
+dimensions. However, this type of indices did not really catch up in the literature of data warehouses since it has a very grave disadvantage. The
+design of a BV-tree index suggests that the size of the index can span multiple-page for very large files (which is the case in data warehouses). Since
+searching a BV-tree index might involve backtracking \cite{freeston1995general}, such property is not desirable.
 
+K-D-B-trees \cite{robinson1981kdb} is another type of tree-based indices that tries to combine the multidimensional search efficiency of K-D-trees
+\cite{bentley1975multidimensional} and the I/O efficiency of B-trees \cite{bayer1970organization}.
 
-\paragraph{Projection Indexes}
-Involves positional indexing where tuples are accessed based on their ordinal position \cite{628286}
+Another widely used tree-based index is R-tree \cite{guttman1984rtrees}. An R-tree is an extension of a B-tree with index records in its leaf nodes
+containing pointers to data objects. Nodes in an R-tree correspond to disk pages if the index is disk-resident. The structure of an R-tree is designed so that a
+spatial search requires visiting only a small number of nodes. The index is completely dynamic; inserts and deletes can be intermixed with searches and no
+periodic reorganization is required. R-trees support multidimensional spaces by storing an n-dimensional rectangle, which is the bounding box of the spatial
+object indexed, in the index record entries \cite{guttman1984rtrees}. R-trees were extended by Norbert et al \cite{norbert1990rstree} by designing the R*-tree
+to support both sparse and dense data at the same time with a slightly higher cost (during insertion) than R-trees. Cheung et al. \cite{cheung2001towards}
+describe how R-trees can be used to index dense data regions (MOLAP data cubes), while having pointers from the leaf nodes to sparse data points (ROLAP).
 
-\paragraph{Bit-sliced Indexes}
+\paragraph{Bitmap Join Index}
+Bitmap join indices are another widely used type of indices in data warehouses epecially when a star schema is used. A bitmap join index is simply a bitmap
+index that is used for calculating the product of the join of the dimension tables. The result is then joined with the fact table to answer the given query
+\cite{oneil1995multi}. In fact such process is less costly than joining the fact table with the dimension tables right away. The reason is that the fact table
+is usually larger than the product of the dimension tables. The disadvantage of bitmap join being not amenable to index updates is not really applicable to the
+case of data warehousing since a data warehouse can be considered as a read-mostly database.
 
+\paragraph{Projection Index}
+Not all columns in a data warehouse are of interest to the given query workloads. Therefore, it makes sense to have faster access to the columns that are used
+the most to improve the query performance. That is why Projection indices are often used in data warehousing. A projection index involves positional indexing
+of a column (form of vertical partitioning) where tuples are accessed based on their ordinal position \cite{datta2002parallel}. More results per I/O operation
+is a direct benefit of using projection indices, since only data of interest are accessed and retrieved. However, only raw data can be fetched (e.g. column
+list in a selection clause). A projection index can be further extended into a bit-sliced index \cite{oneil1997improved} where the projection index is sliced
+vertically into columns of bits. Each column is a bit-sliced index. Bit-sliced indices can help reduce storage costs by using a number of bits per value which
+is not a power of 2. For example, a SALES column contains all sales made in the last month, in pennies. Assuming no item cost more than $2^{20} - 1$ pennies (=
+\$10485.75), this is 20 bit-slice indices). Moreover, computing aggregates, checking predicates can be done using efficient base-2 arithmetic operation. This
+greatly enhances query performance since aggregates are crucial for data warehouses.
+
+\subsubsection{Materialized Views}
+not very useful since most queries are ad-hoc \cite{armstrong1997data, theodoratos2000general}
 
 \subsubsection{Partitioning}
 \cite{thusoo2010data}
 \paragraph{Vertical Partitioning}
 
 \paragraph{Horizontal Partitioning}
-
-\subsubsection{Materialized Views}
-not very useful since most queries are ad-hoc \cite{653447}
-\cite{355309}
-
 
 \section{Open Research Problems in Physical Database Design}
 \label{SEC-OPEN}
