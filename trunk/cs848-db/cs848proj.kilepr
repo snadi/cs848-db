@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0.85
-lastDocument=Paper.tex
+lastDocument=references.bib
 masterDocument=
 name=CS848Proj
 pkg_extIsRegExp=false
@@ -17,7 +17,7 @@ MakeIndex=
 QuickBuild=
 
 [document-settings,item:Paper.tex]
-Bookmarks=381
+Bookmarks=383
 Encoding=UTF-8
 Highlighting=LaTeX
 Indentation Mode=
@@ -34,10 +34,10 @@ ReadWrite=true
 
 [item:Paper.tex]
 archive=true
-column=0
+column=148
 encoding=UTF-8
 highlight=LaTeX
-line=216
+line=662
 mode=LaTeX
 open=true
 order=0
@@ -54,18 +54,18 @@ order=-1
 
 [item:references.bib]
 archive=true
-column=0
+column=30
 encoding=UTF-8
 highlight=BibTeX
-line=1
+line=284
 mode=BibTeX
 open=true
 order=1
 
 [view-settings,view=0,item:Paper.tex]
-CursorColumn=0
-CursorLine=216
+CursorColumn=148
+CursorLine=662
 
 [view-settings,view=0,item:references.bib]
-CursorColumn=0
-CursorLine=1
+CursorColumn=30
+CursorLine=284
