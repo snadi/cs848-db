@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.0.85
-lastDocument=references.bib
+lastDocument=Paper.tex
 masterDocument=
 name=CS848Proj
 pkg_extIsRegExp=false
@@ -34,7 +34,7 @@ ReadWrite=true
 
 [item:Paper.tex]
 archive=true
-column=148
+column=68
 encoding=UTF-8
 highlight=LaTeX
 line=662
@@ -63,7 +63,7 @@ open=true
 order=1
 
 [view-settings,view=0,item:Paper.tex]
-CursorColumn=148
+CursorColumn=68
 CursorLine=662
 
 [view-settings,view=0,item:references.bib]
