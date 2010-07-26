@@ -467,14 +467,14 @@ adjustments may need to be made to fit the nature of the XML documents. For XML-
 and then indexed similar to other tables. Pal et al.~\cite{pal2004indexing} describe how this is done in Microsoft SQL Server 2005. To start with, a new data
 type called `XML' was introduced. This data type could contain values of complete XML documents, or just fragments of XML data. First, the different nodes in
 the XML data are labeled with the ORDPATH~\cite{o2004ordpaths} mechanism. The XML data is then shredded into a relational table with five main columns: ORDPATH,
-TAG, NODE\_TYPE, VALUE, and PATH\_ID. This information is then stored in a $B^{+}-tree$ as the primary index of the XML type. Additionally, a secondary index
+TAG, NODE\_TYPE, VALUE, and PATH\_ID. This information is then stored in a B+tree as the primary index of the XML type. Additionally, a secondary index
 can be created on any of the columns of the primary index to speed things up.
 
 
 For native XML databases such as eXist~\cite{meier2009exist} or TIMBER~\cite{jagadish2002timber}, B+trees are still used to index the XML documents.
 However, in contrast to XML-enabled databases, the XML data is not first stripped into a relational table. eXist uses a number schema to assign unique
 identifiers to each node in the XML document. These unique number identifiers allow the determination of any node's parent, sibling or possible child nodes.
-Four index files are created for XML data where all the indexes are based on $B^{+}-trees$. One index manages the collection hierarchy, one index collects nodes
+Four index files are created for XML data where all the indexes are based on B+-trees. One index manages the collection hierarchy, one index collects nodes
 in a paged file and associates unique node identifiers to the actual nodes, one index indexes elements and attributes, and the last index keeps track of word
 occurrences and is used by the full text search extensions. Oracle uses a similar technique for indexing its XML content where an XMLIndex table is created for
 XML entries~\cite{oracleXML}. This table contains a unique identifier for the XPath leading to the node, the row id of the table used to store the XML data,an
@@ -498,7 +498,7 @@ string, and is then inserted into the fabric. The encoded string is usually very
 \subsubsection{Materialized Views}
 
 The main idea behind using materialized views is to rewrite queries using these views so that they run more efficiently. This is very important in XML
-Databases since XQuery and XPath queries are complicated~\cite{arion2007structured}. Accordingly, materialized views are used in XML databases to improve
+databases since XQuery and XPath queries are complicated~\cite{arion2007structured}. Accordingly, materialized views are used in XML databases to improve
 performance. The semi-structured nature of
 XML data, and the expressiveness of most XML querying languages, view selection for optimization becomes a more complicated
 problem~\cite{tang2009materialized}. Therefore, the choice of which views to materialize becomes more complicated in XML database. Much work has been
@@ -513,7 +513,7 @@ common to horizontally partition the mapped relational tables such that nodes of
 
 \subsubsection{Clustering}
 Clustering in XML databases follows the heuristic that sub-elements are likely to be queries with an element~\cite{jagadish2002timber}. Accordingly, elements
-and their subelements are clustered together. In general, storing the XML data in document order it thought to be the best technique for efficient querying.
+and their subelements are clustered together. In general, storing the XML data in document order is thought to be the best technique for efficient querying.
 Additionally, Lian et al.~\cite{lian2004efficient} suggest clustering XML documents by structural similarity to produce more efficient access. This is done by
 representing the documents as a structure graph (s-graph), and then identifying clusters based on similarity using a clustering algorithm.
 Nayak~\cite{nayak2008fast} also proposes a similar clustering mechanism for XML data. Her technique is also based on structural similarity, but it is more
@@ -525,7 +525,7 @@ focused on the level structure of the XML documents.
 A data warehouse is a subject-oriented, integrated, time-variant, and non-volatile collection of data and decision support technologies, aimed at enabling the
 knowledge worker (executive, manager, analyst) to make better and faster decisions \cite{inmon2002building, chaudhuri1997overview}. More than half of IT
 executives named Data warehousing as the highest-priority post-millennium project for them \cite{sen2005comparison}. The value of data warehousing for an
-organization depends on the organization's need for reliable, consolidated, unique and integrated reporting and analysis of its data, at different levels of
+organization depends on the organization's need for reliable, consolidated, unique and integrated reporting and analysis of its data at different levels of
 aggregation.
 
 Data warehousing has been shown useful in many industries: manufacturing (for order shipment and customer support), retail (for user profiling and inventory
@@ -533,21 +533,22 @@ management), financial services (for claims analysis, risk analysis, credit card
 telecommunications (for call analysis and fraud detection), utilities (for power usage analysis), and healthcare (for outcomes analysis)
 \cite{chaudhuri1997overview}.
 
-Data warehouses tend to be extremely large, in fact it is quite possible for a data warehouse to store tens of petabytes of data while loading tens of terabytes
-of data everyday \cite{thusoo2010data}. Datta et al. \cite {datta2002parallel} notes that the information in a data warehouse is usually multidimensional in
+Data warehouses tend to be extremely large. In fact, it is quite possible for a data warehouse to store tens of petabytes of data while loading tens of
+terabytes
+of data everyday \cite{thusoo2010data}. Datta et al. \cite {datta2002parallel} note that the information in a data warehouse is usually multidimensional in
 nature, requiring the capability to view the data from a variety of perspectives. Aggregated and summarized data become more crucial than detailed records in
-such environment. Therefore, the workloads are query intensive with mostly ad hoc, complex queries, often requiring computationally expensive operations such as
+such environment. Therefore, the workloads are query intensive with mostly ad hoc, complex queries often requiring computationally expensive operations such as
 scans, joins, and aggregation. Performing such operations on large amounts of data, like in the case of data warehousing, complicates the situation further.
 Moreover, the results have to be delivered interactively to the business analyst using the system.
 
 Although data in a data warehouse is extracted and loaded from multiple on-line transaction processing (OLTP) data sources (including DB2, Oracle, IMS
-databases, and flat files) using Extract, Transfer, and Load (ETL) tools (Figure \ref{fig:dw}), a data warehouse is usually maintained seperately from the
+databases, and flat files) using Extract, Transfer, and Load (ETL) tools (Figure \ref{fig:dw}), a data warehouse is usually maintained separately from the
 organization's operational databases \cite{sen2005comparison, chaudhuri1997overview}. This architecture can be justified owing to the fact that operational
 databases are finely tuned to satisfy known OLTP requirements and functionalities which are quite different from that of on-line analytical processing (OLAP)
 which is supported by data warehousing. Analyzing data for decision support usually requires consolidating data from many heterogeneous sources of varying
 quality, or use inconsistent representations, codes and formats. Moreover, understanding trends or making predictions requires historical data, whereas
-operational databases store only current data. In OLAP, there's a need to support multidimensional data models and operations which requires special data
-organization, access methods, and implementation methods, not generally provided by DBMSs targeted for OLTP \cite{chaudhuri1997overview}. Finally, in data
+operational databases store only current data. In OLAP, there is a need to support multidimensional data models and operations which requires special data
+organization, access methods, and implementation methods not generally provided by DBMSs targeted for OLTP \cite{chaudhuri1997overview}. Finally, in data
 warehousing, query throughput and response times are more important than transaction throughput which is the major performance metric for operational databases.
 
 \begin{figure}[!t]
@@ -558,9 +559,10 @@ warehousing, query throughput and response times are more important than transac
 \end{figure}
 
 The design of a data warehouse can follow one of two paradigms: relational-based OLAP (ROLAP) or multidimensional OLAP (MOLAP). In ROLAP, data is stored in
-relational databases and the support for multidimensional data is achieved through the use of the star schema \cite{cheung2001towards}. A star schema (Figure
-\ref{fig:starschema}) is a database schema where a fact table $T$ that holds the base data in the database. Other tables in the database are dimensions for
-table $T$, where each dimension table is linked to the fact table through foreign keys in $T$ pointing to the primary keys in the dimension tables. Thus, the
+relational databases and the support for multidimensional data is achieved through the use of the star schema \cite{cheung2001towards}. A star schema,
+shown in Figurepearson
+\ref{fig:starschema}, is a database schema where a fact table $T$ holds the base data in the database. Other tables in the database are dimensions for
+table $T$ where each dimension table is linked to the fact table through foreign keys in $T$ pointing to the primary keys in the dimension tables. Thus, the
 fact table, which is always the largest table in such schema, participates in almost all join operations \cite{datta2002parallel}. This might enforce some
 design decisions for which indices to use, whether materialized views should be implemented to reduce the overhead of such expensive join operation or not. In
 MOLAP, multidimensional data is directly stored in special data structures (arrays) forming data cubes where each side of the cube reflect a dimension of the
@@ -581,11 +583,11 @@ design process.
 Despite the design challenges involved in data warehousing, some relational index structures are still used after adapting them to match those challenges. 
 
 \paragraph{Tree-based Indices}
-The widely used B-trees have been modified to suit the requirements of a data warehouse design, such modification resulted in various tree-based indices:
+The widely used B-trees have been modified to suit the requirements of a data warehouse design. Such modifications resulted in various tree-based indices:
 UB-trees, BV-trees, K-D-B-trees, and R-trees. A UB-tree index \cite{bayer1997universal} is a variation of B+trees where support for multidimensional data is
 provided by linearizing such data to be able to store it in one dimension. Usually the Z-order (Morton-order) \cite{morton1966computer} is used to perform this
 type of linearization. UB-trees inherit the advantages of B+trees, so they are well suited for high cardinality attributes. They are also excellent for point
-and interval queries (using the pointer in each leaf node to the next leaf node for faster index traversal). UB-trees also inherit the disadvantages of
+and interval queries (using the pointer in each leaf node to the next leaf node for faster index traversal). However, UB-trees also inherit the disadvantages of
 B+trees. Therefore, they poorly perform for low cardinality attributes.
 
 A BV-tree \cite{freeston1995general} is an unbalanced tree that maintains the characteristics of the B-tree in $n$ dimensions, and it can be degenerated to a
@@ -613,8 +615,8 @@ is usually larger than the product of the dimension tables. The disadvantage of 
 case of data warehousing since a data warehouse can be considered as a read-mostly database.
 
 \paragraph{Projection Index}
-Not all columns in a data warehouse are of interest to the given query workloads. Therefore, it makes sense to have faster access to the columns that are used
-the most to improve the query performance. That is why Projection indices are often used in data warehousing. A projection index involves positional indexing
+Not all columns in a data warehouse are of interest to the given query workloads. Therefore, it makes sense to have faster access to the columns that are
+most used to improve the query performance. That is why Projection indices are often used in data warehousing. A projection index involves positional indexing
 of a column (form of vertical partitioning) where tuples are accessed based on their ordinal position \cite{datta2002parallel}. More results per I/O operation
 is a direct benefit of using projection indices, since only data of interest are accessed and retrieved. However, only raw data can be fetched (e.g. column
 list in a selection clause). A projection index can be further extended into a bit-sliced index \cite{oneil1997improved} where the projection index is sliced
@@ -624,9 +626,10 @@ is not a power of 2. For example, a SALES column contains all sales made in the 
 greatly enhances query performance since aggregates are crucial for data warehouses.
 
 \subsubsection{Materialized Views}
-A data warehouse must be built with a solid foundation that is flexible enough and responsive to business changes over time \cite{armstrong1997data}. Meanwhile,
-a data warehouse can be seen as a set of materialized views defined over the remote data sources (Figure \ref{fig:dw}). That is why selection of materialized
-views is one of the most challenging problems that faces data warehouse architects \cite{theodoratos2000general}. Most of the solutions in the literature
+A data warehouse must be built with a solid foundation that is flexible enough and responsive to business changes over time \cite{armstrong1997data}.
+Meanwhile, as shown in Figure~\ref{fig:dw}, a data warehouse can be seen as a set of materialized views defined over the remote data sources. That is why
+selection of materialized
+views is one of the most challenging problems that data warehouse architects face \cite{theodoratos2000general}. Most of the solutions in the literature
 defined the problem of selecting views to materialize as \textquotedblleft selecting views for materialization in order to satisfy a number of design goals
 given a set of constraints \textquotedblright. The problem can be reduced to a cost minimization problem, whether it is the query evaluation cost
 \cite{harinarayan1996implementing}, total view maintenance cost \cite{kenneth1996materialized}, both \cite{yang1997algorithms}, or the operational cost
@@ -636,18 +639,19 @@ formed of ad-hoc complex queries.
 
 \subsubsection{Partitioning}
 Both horizontal and vertical partitioning are heavily used in data warehouse design. Partitioning a data warehouse has many advantages. Horizontal partitioning
-is usually used in data warehouses to make the job of the data warehouse administrators easier by facilitating the process of manages such large data
+is usually used in data warehouses to make the job of the data warehouse administrators easier by facilitating the process of managing such large data
 sources from which a data warehouse gets its data. In other words, it breaks down the management of large databases to managing smaller sets (i.e. partitions)
 of data \cite{thusoo2010data}. More importantly, partitioning provides parallelism in various situations: loading data sources \cite{barclay1994loading},
 performing parallel joins on huge data \cite{datta2002parallel}, faster drill-down and roll-up operations \cite{chaudhuri1997overview}. Partitioning also
-facilitates compressing data that is not of interest to users of the data warehouse. Vertical paritioning is also used to keep seldom used columns away from
+facilitates compressing data that is not of interest to users of the data warehouse. Vertical partitioning is also used to keep seldom used columns away from
 the process of answering queries for better performance.
 
-On the other hand, if partitioning is over-used in a data warehouse, managing them will be a complex process due to the fact of having a huge amount of data.
+On the other hand, if partitioning is over-used in a data warehouse, managing it will be a complex process due to the fact of having a huge amount of
+data.
 Finally, there is an inherent cost of managing the meta data (e.g. data cube definition) when the number of partitions increases.
 
 \subsubsection{Clustering}
-A data warehouse is clustered by nature as Figure \ref{fig:dw} suggests. The data loaded into a data warehouse comes from various operational data sources,
+A data warehouse is clustered by nature as Figure \ref{fig:dw} suggests. The data loaded into a data warehouse comes from various operational data sources where
 each source has the data that is the most interesting/related to it (i.e. clustering). The data warehouse can be further divided into a collection of
 conforming data marts \cite{sen2005comparison}. Each data mart stores data that is related to each other (e.g. based on the organization's business processes).
 For example, one data mart can store sales data that is of particular interest to the Sales Department in an organization. Along with sales data,
@@ -660,8 +664,8 @@ Automating the physical database design choices has been a very attractive area 
 indexes to create, which views to materialize, and how to partition data are hard choices. They are highly dependent on the schema used as well
 as the query workload. The number of combinations of choices that can be made is very large making this task quite tedious and difficult for database
 administrators. Accordingly, researchers have been inclined to find ways to automate these decisions. There were many early research efforts done in this
-area(E.g. \cite{finkelstein1988physical, hammer76selec, frank1992selec, chaudhuri1997overview, schiefer1999db2, valentin2000select}), but most of these efforts
-focused on having a static workload. Accordingly, research shifted to more dynamic ways to automate physical design. Initial attempts used an dynamic, on-line
+area(E.g. \cite{finkelstein1988physical, chaudhuri1997overview, hammer76selec, frank1992selec, schiefer1999db2, valentin2000select}), but most of these efforts
+focused on having a static workload. Accordingly, research shifted to more dynamic ways to automate physical design. Initial attempts used dynamic, on-line
 approaches(E.g. \cite{bruno2007online, sattler2003, schnaitter2007}) where they observed the changes in the workload and adjusted the design accordingly while
 attempting to predict future behavior based on the observed behavior. To avoid the problems of on-line design, researchers are also currently looking at how to
 perform this dynamic physical design off-line (E.g. \cite{hannes2008,agrawal2006}). Additionally, finding better evaluation techniques to compare different
@@ -685,7 +689,7 @@ use of them or to be able to cope with the new requirements they pose.
 \section{Conclusions}
 \label{SEC-CONCL}
 
-In this survey, we present four elements of physical design in database: index structures, materialized views, partitioning, and clustering. We started out
+In this survey, we presented four elements of physical design in database: index structures, materialized views, partitioning, and clustering. We started out
 by explaining how these design factors are implemented in traditional Relational Database Management Systems (RDBMS), and then presented how they are used in
 other information systems. We focused on three types of information systems: Main Memory Database Systems (MMDB), XML Databases, and Data Warehouses. We
 presented the challenges involved with each type of system, and how each of the four physical design elements were adapted or utilized to overcome these
@@ -708,27 +712,31 @@ data warehouses are developed, more elaborate path indexing techniques and more 
 \begin{tabular}{p{2cm}||p{5cm}|p{4cm}|p{4cm}|p{4cm}}
  & \textbf{Index Structures} & \textbf{Materialized Views} & \textbf{Partitioning} & \textbf{Clustering}\\
 \hline\hline
-\textbf{RDBMS}& E.g. B+trees, Bitmap Index, Hash Tree & Store results of common complicated queries on disk & Horizontal Partitioning (range, list, hash,
-composite) Vertical Partitioning& Group related items together on disk\\
+\textbf{RDBMS}& E.g. B+trees, Bitmap Index, Hash Tree & Store results of common complicated queries on disk & 
+\raggedright  -Horizontal Partitioning (range, list, hash,
+composite) \linebreak \linebreak
+-Vertical Partitioning& Group related items together on disk\\
 \hline
 \textbf{MMDB} & 
--No need to store actual data values in index \linebreak \linebreak 
--Larger node size that is aligned with cache line size \linebreak \linebreak
--E.g. B+tree, CSB+tree, T tree, CST tree & Not highly utilized since processing and main memory access is cheap & Only needed in secondary storage to speed up
+\raggedright  -No need to store actual data values in index \linebreak \linebreak 
+\raggedright  -Larger node size that is aligned with cache line size \linebreak \linebreak
+-E.g. B+tree, CSB+tree, T tree, CST tree & Not highly utilized since processing and main memory access is cheap & 
+\raggedright  -Only needed in secondary storage to speed up
 reloading in case of a crash\linebreak \linebreak 
 -Horizontal \& Vertical partitioning& 
 Not needed since random access in main memory costs the same as sequential access\\
 \hline
-\textbf{XML DB} & Need a number scheme. E.g. B+tree and variations used. & XQuery and XPath results are materialized & Horizontal partitioning based on inlining
-or node
-type & Based on document order or structural similarity\\
+\textbf{XML DB} &
+\raggedright -Need a numbering scheme for nodes. \linebreak \linebreak
+-E.g. B+tree and variations used. & XQuery and XPath results are materialized & Horizontal partitioning
+based on inlining or node type & Based on document order or structural similarity\\
 \hline
 \textbf{Data Warehouses} & E.g. Universal B+tree, Bitmap index, Projection Index, R*-tree & 
--Reduce query evaluation cost \linebreak
--Reduce view maintenance cost \linebreak 
--Reduce operational costs & 
--Horizontal partitioning based on time dimension \linebreak \linebreak 
--Vertical partitioning of seldom used columns. & Data is
+\raggedright-Reduce query evaluation cost \linebreak \linebreak
+\raggedright -Reduce view maintenance cost \linebreak \linebreak
+\raggedright -Reduce operational costs & 
+\raggedright  -Horizontal partitioning based on time dimension \linebreak \linebreak 
+\raggedright -Vertical partitioning of seldom used columns. & Data is
 clustered by
 nature.\\
 \end{tabular}
