@@ -8,6 +8,8 @@
 \usepackage{amssymb}
 \usepackage{url}
 \usepackage{multirow}
+\usepackage{array}
+
 \begin{document}
 
 \title{A Survey of Physical Design Techniques of Information Systems}
@@ -43,7 +45,7 @@ performance. Physical database design is concerned with the actual storage of da
 Data is stored in the form of records in files which reside on a physical disk. In this sense, we try to find the most efficient way possible to store and
 access the data such that queries are answered and executed efficiently. In the traditional relational database system, this involved selecting proper indexing
 techniques, partitioning the data for more efficient access, materializing the results of some queries, clustering and compressing the data, and many other
-techniques \cite{fikelstein1988physical,lightstone2007physical}. The physical design aspects of relational databases have been studied in much detail. However,
+techniques \cite{finkelstein1988physical,lightstone2007physical}. The physical design aspects of relational databases have been studied in much detail. However,
 over time, different types of Information Systems have emerged that have different characteristics. For example, most relational databases have been disk-based
 where the primary copy of the data resides on disk. This is as opposed to Main Memory Relational Databases (MMDB) where the primary copy of the data resides in
 main memory and no disk operations are needed to query the data. Such differences pose new requirements for the physical design of these systems.
@@ -92,15 +94,15 @@ fanout, they allow less I/O operations to access a specific data record which is
 Bitmap indices represent another type of index structures that is commonly used and cited in the literature. Using bitmaps as indexes first appeared in the
 literature as part of the architecture of the Model 204 commercial database of Computer Corporation of America for the IBM 370 computer \cite{patrick1987model}.
 A bitmap index structure is based on a bitmap (i.e. bitset or bit array) data structure where individual bits correspond to values in unique records. Given a
-table column $C$ where a record $x$ can have one of six unique values, a traditional bitmap indexe defined for $C$ generates one bitmap vector for each of the
+table column $C$ where a record $x$ can have one of six unique values, a traditional bitmap index defined for $C$ generates one bitmap vector for each of the
 six different values ($B0-B5$). If the value of $C$ for record $x$ is set to 3, the corresponding bit in vector $B3$ is set to 1. Otherwise the bit is set to 0.
 
 Bitmap indices are best used when the set of possible key values in the index is small with a large number of rows, e.g. gender attribute \cite{212001}.
 Therefore, bitmap indices outperform B+trees for low cardinality attributes. The reason is that given an attribute with low cardinality, defining a B+tree index
 on it means that the tree will have very few leaf nodes, each one storing a very long list of record identifiers (RIDs). On the other hand, defining a
-bitmapindex on that same attribute means that such long lists or RIDs will not be stored, rather bit vectors that represent the distinct attribute values will
+bitmap index on that same attribute means that such long lists or RIDs will not be stored, rather bit vectors that represent the distinct attribute values will
 be stored as previously explained. This leads to a direct benefit of consuming less storage space. Moreover, queries in that case can be answered using bit-wise
-logical operatios (e.g. and, or, not) which can improve query performance \cite{253268}. Another advantage of bitmap indices is the ability to perform more
+logical operations (e.g. and, or, not) which can improve query performance \cite{253268}. Another advantage of bitmap indices is the ability to perform more
 efficient joins by creating bitmap join indices and using those indices to calculate the result of the join \cite{212001}. Although there are many benefits
 gained from using bitmap indices, they poorly perform during updates. The reason is that when an updates is to be done to a bitmap index, the whole bit vector
 for the index is locked, blocking any access to the index for other operations, then the lock is released when the update is done. That is why bitmap indices
@@ -109,7 +111,7 @@ are usually used for read-mostly databases, a famous example of which are data w
 Another variation of indexing, a hash table index, often simply known as a hash index is used to organize unordered physical database tables for efficient
 access \cite{lightstone2007physical}. This type of index is usually defined for keys that have unique values in the data records. Creating this index requires
 passing the attribute (key) value to a hash function that maps it to a starting block address (i.e. bucket address). Afterwards, table insertions will be done
-according to the hash function, as well as quering the records later.
+according to the hash function, as well as querying the records later.
 
 In general, indices are a way of organizing the logical structure of a database without altering its physical structure. However, sometimes it is desirable to
 store related records near each other on disk for better locality. This can be achieved through implementing a clustered index on the desired key values.
@@ -156,7 +158,7 @@ The main advantage of any type of partitioning is to reduce the amount of time i
 \cite{lightstone2007physical}. For example, if a table has 1000 records, and a query is only using the first 20 records then having these 20 records in a
 partition containing 50 records will save time as opposed to examining all the 1000 records. Horizontal partitioning is more widely used, and is implemented in
 all current DBMSes \cite{mysqlpartitioning, sqlsrvpartitioning, sybasepartitioning, postgrepartitioning, oraclepartitioning, db2partitioning} which explains
-why there exists many flavors of horizontal paritioning techniques. There are three major types of horizontal partitioning: range partitioning
+why there exists many flavors of horizontal partitioning techniques. There are three major types of horizontal partitioning: range partitioning
 \cite{dewitt1986gamma}, list partitioning \cite{lightstone2007physical} (which is a variation of range partitioning), and hash partitioning
 \cite{lightstone2007physical}. Of course, one can mix and match those partitioning schemes and come up with a composite partitioning that fits a particular
 situation \cite{lightstone2007physical}. Table \ref{tab:horpartition} shows different categories of horizontal partitioning, and the situations they are suited
@@ -165,28 +167,27 @@ bitmap index is used on that table, finding records in the same region or state 
 devices to achieve parallelism when accessing it can greatly increase the performance of the database.
 
 \begin{table}[!t]
+\centering
 \scalebox{0.7}{
- \begin{tabular}{p{2cm}||p{4cm}|p{4cm}|p{4cm}|p{4cm}}
+ \begin{tabular}{p{1.8cm}||p{4cm}|p{3.6cm}|p{4cm}|p{5cm}}
 & \textbf{Range Partitioning} & \textbf{List Partitioning} & \textbf{Hash Partitioning} & \textbf{Composite Partitioning}\\
 \hline\hline
 \textbf{How?} & If key falls in range & List of keys & Hash function& Hybrid\\
 \hline
 \textbf{Why?} & Disk limits & Group point values & Range/List are N/A & According to needs\\
 \hline
-\textbf{Benefits} & \multicolumn{4}{c}{Partition elimination, Improved administration, Fast roll-in/out, and Implicit clustering }\\
+\textbf{Benefits} & \multicolumn{4}{p{16cm}}{\centering Partition elimination \linebreak Improved administration \linebreak Fast roll-in/out \linebreak Implicit
+clustering }\\
 \hline
-\textbf{Example} & \begin{itemize}
-                    \item Zip code 
-		    \item Time range
-                   \end{itemize} &
-		    \begin{itemize}
-		    \item Regions
-		    \item States
-		    \end{itemize} &
-		    \begin{itemize}
-		    \item EmployeeId
-		    \item ProductId
-		    \end{itemize} &
+\textbf{Example} & %\begin{itemize} 
+                    \raggedright - Zip code \linebreak
+		    - Time range &
+                  \raggedright
+		    - Regions \linebreak
+		    - States
+		     & \raggedright
+		    - EmployeeId \linebreak
+		    - ProductId &
 		    Hash then List \\
 \hline
 \textbf{RDBMS} & MySQL, DB2, Oracle, PostgreSQL, SQL Server & MySQL, Oracle, PostgreSQL, SQL Server & MySQL, Oracle & MySQL, Oracle\\
@@ -243,44 +244,7 @@ However, MMDB's primary copy of the data resides in main memory. Accessing data 
 performance that disk based systems. However, main memory is more expensive and the size is limited in comparison to disk. However, MMDBs are essential to use
 where some of the collected data cannot, or will not, be stored on disk in the first place. For example, phone switch data may be needed for reasoning with
 other stored data, but it is captured in real time and will not necessarily be stored on disk. MMDB have many implementation challenges that have been addressed
-throughout the research community. These challenges will be discussed throughout this section. Table~\ref{tab:mmdbsumm} summarizes
-the physical design elements of MMDBs.
-
-\begin{table}[t!]
-\centering
-\scalebox{0.9}{
-\begin{tabular}{p{3cm}|p{6cm}|p{6cm}}
-\hline
- \textbf{Physical Design Element} & \textbf{Desired Features} & \textbf{Methods/Structures Used}\\
-\hline\hline
-Index Structures & \begin{itemize}
-                    \item No need to store actual values in index \item Larger node size that is aligned with cache line size for cache consciousness
-                   \end{itemize} & \begin{itemize}
-                                    \item B Tree
-\item B+ Tree
-\item CSB+ Tree
-\item pB+ Tree
-\item T Tree
-\item CST Tree
-\item CSS Tree
-                                   \end{itemize}\\
-\hline
-Materialized Views & \begin{itemize} \item Not highly utilized since processing and memory access is cheap \end{itemize}& N/A\\
-\hline
-Partitioning & \begin{itemize} \item Only needed in secondary storage to speed up reloading in case of a crash \end{itemize} & \begin{itemize}
-                                                                                            \item Horizontal Partitioning
-\item Vertical Partitioning
-                                                                                           \end{itemize}\\
-\hline
-Clustering & \begin{itemize} \item Not needed since random or dispersed main memory access is not more expensive than sequential access \end{itemize}
-& N/A
-
-\end{tabular}
-}
-\caption{Summary of physical design of Main Memory Databases (MMDB)}
-\label{tab:mmdbsumm}
-\end{table}
-
+throughout the research community. These challenges will be discussed throughout this section. 
 
 \subsubsection{Index Structures}
 
@@ -306,72 +270,57 @@ indexing. For their purposes, it served as a good index for main memory since it
 
  \begin{table}[t!]
 \centering
-\scalebox{0.6}{
-\begin{tabular}{p{2cm}|p{6cm}|p{6cm}}
+\scalebox{0.8}{
+\begin{tabular}{p{2.2cm}|p{6cm}|p{6cm}}
 \hline
- \textbf{Index Structure} & \textbf{Features} & \textbf{Cache Consciousness}\\
+ \centering \textbf{Index Structure} & \textbf{Features} & \textbf{Cache Consciousness}\\
 \hline\hline
-B Trees &
-\begin{itemize}\item Good storage utilization
-\item Reasonably quick searching
-\item Fast updating
-\end{itemize} 
-& \begin{itemize}\item Reasonable cache behavior if node fits in cache line\end{itemize}\\
+B Trees & 
+\raggedright -Good storage utilization \linebreak  \linebreak
+\raggedright -Reasonably quick searching \linebreak \linebreak
+-Fast updating 
+& 
+-Reasonable cache behavior if node fits in cache line\\
 \hline
-B+ Trees & 
-\begin{itemize}
-\item Reasonably quick searching
-\item Fast updating
-\end{itemize} &
-\begin{itemize}
-\item Reasonable cache behavior if node fits in cache line\end{itemize}\\
+B+ Trees &
+\raggedright -Reasonably quick searching \linebreak \linebreak
+\raggedright -Fast updating
+&
+-Reasonable cache behavior if node fits in cache line\\
 \hline
-CSB+ Trees & \begin{itemize}
-              \item Same features of B+ Trees
-\item Stores child nodes in an array. Stores pointer to first child only and uses index calculation to get the rest
-             \end{itemize} &
-\begin{itemize}
- \item Good cache performance due to improved locality \& lower tree height (because of larger node size)
-\end{itemize}\\
+CSB+ Trees & 
+-Same features of B+ Trees \linebreak \linebreak
+-Stores child nodes in an array. Stores pointer to first child only and uses index calculation to get the rest
+ &
+-Good cache performance due to improved locality \& lower tree height (because of larger node size)\\
 \hline
 
-pB+ Trees & \begin{itemize}
-              \item Same features of B+ Trees
-             \end{itemize} &
-\begin{itemize}
- \item Improves cache miss performance by prefetching more data in each cache miss
-\item Node size is also increased leading to the same benefits of CSB+ Trees
-\end{itemize}\\
+pB+ Trees & 
+-Same features of B+ Trees
+             &
+-Improves cache miss performance by prefetching more data in each cache miss \linebreak \linebreak
+-Node size is also increased leading to the same benefits of CSB+ Trees\\
 \hline
-T Tree &  \begin{itemize}
-              \item Contain pointers to data values instead of the values themselves leading to better space utilization
-\item Many sorted keys per node
-\item Only minimum and maximum keys used for comparisons
-\item Contains record pointers in every key
-\item Good update \& storage characteristics if Btrees.
-
-             \end{itemize} &
-\begin{itemize}
- \item Cache behavior was not considered at time of design
-\item Record pointers waste space in cache
-\end{itemize}\\
+T Tree &  
+-Contain pointers to data values instead of the values themselves leading to better space utilization \linebreak \linebreak
+-Many sorted keys per node \linebreak \linebreak
+-Only minimum and maximum keys used for comparisons \linebreak \linebreak
+\raggedright -Contains record pointers in every key \linebreak \linebreak
+-Good update \& storage characteristics if Btrees.
+             &
+-Cache behavior was not considered at time of design \linebreak \linebreak
+-Record pointers waste space in cache\\
 \hline
-CST & \begin{itemize}
-       \item Binary search tree for maximum value of each node leads to faster search
-\item More space efficient by removing pointers \& using array storage. Index calculation used to allocate values
-      \end{itemize} &
-\begin{itemize}
- \item Node size is aligned with cache line size to avoid misses
-\item Higher usage of cached data in binary search tree
-\end{itemize}\\
+CST & 
+-Binary search tree for maximum value of each node leads to faster search \linebreak \linebreak
+-More space efficient by removing pointers \& using array storage. Index calculation used to allocate values &
+-Node size is aligned with cache line size to avoid misses \linebreak \linebreak
+-Higher usage of cached data in binary search tree\\
 \hline
-CSS Trees &  \begin{itemize}
-       \item Fast traversal in $log_{m+1}n$ ($m$ is the number of keys per node)
-\item Mainly suitable for read environments
-      \end{itemize} &
-\begin{itemize}
- \item Good cache behavior since $m$ is chosen to fit in the cache line size
-\end{itemize}\\
+CSS Trees & 
+-Fast traversal in $log_{m+1}n$ ($m$ is the number of keys per node) \linebreak \linebreak
+-Mainly suitable for read environments &
+-Good cache behavior since $m$ is chosen to fit in the cache line size\\
 
 \end{tabular}
 }
@@ -569,7 +518,7 @@ the organization's need for reliable, consolidated, unique and integrated report
 
 Data warehousing has been shown useful in many industries: manufacturing (for order shipment and customer support), retail (for user profiling and inventory
 management), financial services (for claims analysis, risk analysis, credit card analysis, and fraud detection), transportation (for fleet management),
-telecommunications (for call analysis and fraud detection), utilities (for power usage analysis), and healthcare (for outcomes analysis)
+telecommunications (for call analysis and fraud detection), utilities (for power usage analysis), and health care (for outcomes analysis)
 \cite{chaudhuri1997overview}.
 
 Data warehouses tend to be extremely large, in fact it is quite possible for a data warehouse to store tens of petabytes of data while loading tens of terabytes
@@ -581,7 +530,7 @@ Moreover, the results have to be delivered interactively to the business analyst
 
 
 Although data in a data warehouse is extracted and loaded from multiple on-line transaction processing (OLTP) data sources (including DB2, Oracle, IMS
-databases, and flat files) using Extract, Transfer, and Load (ETL) tools (see Figure \ref{fig:dw}), a data warehouse is usually maintained seperately from the
+databases, and flat files) using Extract, Transfer, and Load (ETL) tools (see Figure \ref{fig:dw}), a data warehouse is usually maintained separately from the
 organization's operational databases \cite{sen2005comparison, chaudhuri1997overview}. This architecture can be justified owing to the fact that operational
 databases are finely tuned to satisfy known OLTP requirements and functionalities which are quite different from that of on-line analytical processing (OLAP)
 which is supported by data warehousing. Analyzing data for decision support usually requires consolidating data from many heterogeneous sources of varying
@@ -672,7 +621,7 @@ databases and for databases where random writes are not as frequent, SSDs might 
 transaction logs, and intermediate results of sorting and joining~\cite{lee2008}.
 
 Just like all other research areas are moving to the cloud, database systems are moving there too. Accordingly, lots of current research focuses on adapting
-storage techniques and index structures to the cloud. For example, Wang et al. propose a new index structure for indexing mult-dimensional data in the
+storage techniques and index structures to the cloud. For example, Wang et al. propose a new index structure for indexing multi-dimensional data in the
 cloud~\cite{wang2010indexing}. Lots of work is currently being done in this area. For example, Wu et al.~\cite{wu2010efficient} propose a modified B+tree index
 for datasets stored in each compute node. The exact requirements and solutions for data management in the cloud are still being
 researched~\cite{abadi2009data}, and so this is an area that is expected to receive more attention in the future as cloud computing becomes more prevalent.
@@ -682,8 +631,62 @@ This is by no means an exhaustive list of the problems still being researched in
 being faced. As shown, as new technologies such as SSDs or cloud computing environments emerge, database systems will need to adapt themselves to either make
 use of them or to be able to cope with the new requirements they pose. 
 
+\begin{table}[!t]
+\centering
+\scalebox{0.7}{
+\begin{tabular}{p{2cm}||p{5cm}|p{4cm}|p{4cm}|p{4cm}}
+ & \textbf{Index Structures} & \textbf{Materialized Views} & \textbf{Partitioning} & \textbf{Clustering}\\
+\hline\hline
+\textbf{RDBMS}& E.g. B+trees, Bitmap Index, Hash Tree & Store results of common complicated queries on disk & Horizontal Partitioning (range, list, hash,
+composite) Vertical Partitioning& Group related items together on disk\\
+\hline
+\textbf{MMDB} & 
+-No need to store actual data values in index \linebreak \linebreak 
+-Larger node size that is aligned with cache line size \linebreak \linebreak
+-E.g. B+tree, CSB+tree, T tree, CST tree & Not highly utilized since processing and main memory access is cheap & Only needed in secondary storage to speed up
+reloading in case of a crash\linebreak \linebreak 
+-Horizontal \& Vertical partitioning& 
+Not needed since random access in main memory costs the same as sequential access\\
+\hline
+\textbf{XML DB} & Need a number scheme. E.g. B+tree and variations used. & XQuery and XPath results are materialized & Horizontal partitioning based on inlining
+or node
+type & Based on document order or structural similarity\\
+\hline
+\textbf{Data Warehouses} & E.g. Universal B+tree, Bitmap index, Projection Index & 
+-Essential to improve performance \linebreak \linebreak 
+-Not applicable to adhoc queries & 
+-Horizontal partitioning based on time dimension \linebreak \linebreak 
+-Vertical partitioning of seldom used columns. & Data is
+clustered by
+nature.\\
+\end{tabular}
+}
+\caption{Summary of the different elements of physical design in the studied systems}
+\label{tab:summary}
+\end{table}
+
 \section{Conclusions}
 \label{SEC-CONCL}
+
+In this survey, we present four elements of physical design in database: index structures, materialized views, partitioning, and clustering. We started out
+by explaining how these design factors are implemented in traditional Relational Database Management Systems (RDBMS), and then presented how they are used in
+other information systems. We focused on three types of information systems: Main Memory Database Systems (MMDB), XML Databases, and Data Warehouses. We
+presented the challenges involved with each type of system, and how each of the four physical design elements were adapted or utilized to overcome these
+challenges. Table~\ref{tab:summary} summarizes the results of our survey. From our literature review, we found that the B+tree is the most utilized index
+structure, and has been adapted and customized to fit the different needs of other systems. For example, it was made more cache conscious to fit MMDB needs,
+and was changed to apply to multidimensions to fit the Data Warehouses needs. Materialized views were found to be heavily utlitized in all the systems we
+presented, except in MMDBs. Partitioning was also used in all systems, but was only used for data reloading in MMDBs. Horizontal partitioning is much more
+common that vertical partitioning. Clustering is very important in all systems, except for MMDBs. Clustering is especially very important for Data Warehouses
+where huge amounts of data are stored.
+
+It was interesting to see how the different nature of these systems affects the physical design. Throughout the survey, we have showed some of the
+commonalities between the different systems. Moreover, understanding how to meet these needs would help us design mash-ups of these different systems. For
+example, just like relational database systems shifted into main memory, we might have an XML main memory database system. In that case, the index structures
+fitted for XML data indexing will have to be adapted for main memory by making sure they are aligned with the cache line size, for example. Similarly, if XML
+data warehouses are developed, more elaborate path indexing techniques and more clustering would be required. 
+
+
+
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
