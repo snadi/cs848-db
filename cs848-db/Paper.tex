@@ -136,7 +136,6 @@ in accordance with the index blocks that point to them. Therefore, fewer data bl
 clustered index is that there can only be one clustered index per table because the physical organization of the table must be fixed
 \cite{lightstone2007physical}.
 
-
 \subsection{Materialized Views}
 
 In a large database system, there are usually a few complex queries that require the joining of many large tables. If these queries are frequently run, then the
@@ -340,7 +339,7 @@ CSS-trees &
 \label{tab:mmdbindexsumm}
 \end{table}
 
-\subsubsection*{B Trees}
+\subsubsection*{B-trees}
 Although B-trees, explained in the previous section, are originally designed for disk based database systems, they were also found to be useful in
 MMDB~\cite{lehman1986study}. In disk based systems, the B+ Tree is more used than the regular B Tree. However, in MMDBs, the B-tree would be
 more suitable from a storage perspective since there is no gain from keeping all the data in the leaves. In a main memory system, this
@@ -625,13 +624,34 @@ is not a power of 2. For example, a SALES column contains all sales made in the 
 greatly enhances query performance since aggregates are crucial for data warehouses.
 
 \subsubsection{Materialized Views}
-not very useful since most queries are ad-hoc \cite{armstrong1997data, theodoratos2000general}
+A data warehouse must be built with a solid foundation that is flexible enough and responsive to business changes over time \cite{armstrong1997data}. Meanwhile,
+a data warehouse can be seen as a set of materialized views defined over the remote data sources (Figure \ref{fig:dw}). That is why selection of materialized
+views is one of the most challenging problems that faces data warehouse architects \cite{theodoratos2000general}. Most of the solutions in the literature
+defined the problem of selecting views to materialize as \textquotedblleft selecting views for materialization in order to satisfy a number of design goals
+given a set of constraints \textquotedblright. The problem can be reduced to a cost minimization problem, whether it is the query evaluation cost
+\cite{harinarayan1996implementing}, total view maintenance cost \cite{kenneth1996materialized}, both \cite{yang1997algorithms}, or the operational cost
+\cite{elena1997materialized, gupta2005selection, theodoratos1999designing, theodoratos1997data, theodoratos1999designingdw, theodoratos2000incremental,
+yang1997algorithms}. Although materialized views greatly improves the performance of a data warehouse, it might not be as useful when the query workload is
+formed of ad-hoc complex queries.
 
 \subsubsection{Partitioning}
-\cite{thusoo2010data}
-\paragraph{Vertical Partitioning}
+Both horizontal and vertical partitioning are heavily used in data warehouse design. Partitioning a data warehouse has many advantages. Horizontal partitioning
+is usually used in data warehouses to make the job of the data warehouse administrators easier by facilitating the process of manages such large data
+sources from which a data warehouse gets its data. In other words, it breaks down the management of large databases to managing smaller sets (i.e. partitions)
+of data \cite{thusoo2010data}. More importantly, partitioning provides parallelism in various situations: loading data sources \cite{barclay1994loading},
+performing parallel joins on huge data \cite{datta2002parallel}, faster drill-down and roll-up operations \cite{chaudhuri1997overview}. Partitioning also
+facilitates compressing data that is not of interest to users of the data warehouse. Vertical paritioning is also used to keep seldom used columns away from
+the process of answering queries for better performance.
 
-\paragraph{Horizontal Partitioning}
+On the other hand, if partitioning is over-used in a data warehouse, managing them will be a complex process due to the fact of having a huge amount of data.
+Finally, there is an inherent cost of managing the meta data (e.g. data cube definition) when the number of partitions increases.
+
+\subsubsection{Clustering}
+A data warehouse is clustered by nature as Figure \ref{fig:dw} suggests. The data loaded into a data warehouse comes from various operational data sources,
+each source has the data that is the most interesting/related to it (i.e. clustering). The data warehouse can be further divided into a collection of
+conforming data marts \cite{sen2005comparison}. Each data mart stores data that is related to each other (e.g. based on the organization's business processes).
+For example, one data mart can store sales data that is of particular interest to the Sales Department in an organization. Along with sales data,
+product-related information can also be stored to provide better locality for queries that usually ask question about sales and products, and so on.
 
 \section{Open Research Problems in Physical Database Design}
 \label{SEC-OPEN}
@@ -640,28 +660,47 @@ Automating the physical database design choices has been a very attractive area 
 indexes to create, which views to materialize, and how to partition data are hard choices. They are highly dependent on the schema used as well
 as the query workload. The number of combinations of choices that can be made is very large making this task quite tedious and difficult for database
 administrators. Accordingly, researchers have been inclined to find ways to automate these decisions. There were many early research efforts done in this
-area(E.g.~\cite{finkelstein1988physical, hammer76selec, frank1992selec, chaudhuri1997overview, schiefer1999db2, valentin2000select}), but most of these efforts
+area(E.g. \cite{finkelstein1988physical, hammer76selec, frank1992selec, chaudhuri1997overview, schiefer1999db2, valentin2000select}), but most of these efforts
 focused on having a static workload. Accordingly, research shifted to more dynamic ways to automate physical design. Initial attempts used an dynamic, on-line
-approaches(E.g.~\cite{bruno2007online, sattler2003, schnaitter2007}) where they observed the changes in the workload and adjusted the design accordingly while
+approaches(E.g. \cite{bruno2007online, sattler2003, schnaitter2007}) where they observed the changes in the workload and adjusted the design accordingly while
 attempting to predict future behavior based on the observed behavior. To avoid the problems of on-line design, researchers are also currently looking at how to
-perform this dynamic physical design off-line (E.g. ~\cite{hannes2008,agrawal2006}). Additionally, finding better evaluation techniques to compare different
-automatic physical design decision is currently being studied~\cite{gebaly2008}.
+perform this dynamic physical design off-line (E.g. \cite{hannes2008,agrawal2006}). Additionally, finding better evaluation techniques to compare different
+automatic physical design decision is currently being studied \cite{gebaly2008}.
 
 Other problems which are currently being researched include improving I/O operations in database systems by using Solid State Drives (SSD) instead of of Hard
-Disk Drives (HDD)~\cite{lee2009, du2009, lee2008}. SSDs have faster read performance, but perform poorly in random writes. However, for certain applications in
+Disk Drives (HDD) \cite{lee2009, du2009, lee2008}. SSDs have faster read performance, but perform poorly in random writes. However, for certain applications in
 databases and for databases where random writes are not as frequent, SSDs might be suitable. Using SDDs also seems promising when used for
-transaction logs, and intermediate results of sorting and joining~\cite{lee2008}.
+transaction logs, and intermediate results of sorting and joining \cite{lee2008}.
 
 Just like all other research areas are moving to the cloud, database systems are moving there too. Accordingly, lots of current research focuses on adapting
 storage techniques and index structures to the cloud. For example, Wang et al. propose a new index structure for indexing multi-dimensional data in the
-cloud~\cite{wang2010indexing}. Lots of work is currently being done in this area. For example, Wu et al.~\cite{wu2010efficient} propose a modified B+tree index
+cloud \cite{wang2010indexing}. Lots of work is currently being done in this area. For example, Wu et al. \cite{wu2010efficient} propose a modified B+tree index
 for datasets stored in each compute node. The exact requirements and solutions for data management in the cloud are still being
-researched~\cite{abadi2009data}, and so this is an area that is expected to receive more attention in the future as cloud computing becomes more prevalent.
-
+researched \cite{abadi2009data}, and so this is an area that is expected to receive more attention in the future as cloud computing becomes more prevalent.
 
 This is by no means an exhaustive list of the problems still being researched in physical database design, but they provide a flavor of the challenges still
 being faced. As shown, as new technologies such as SSDs or cloud computing environments emerge, database systems will need to adapt themselves to either make
-use of them or to be able to cope with the new requirements they pose. 
+use of them or to be able to cope with the new requirements they pose.
+
+\section{Conclusions}
+\label{SEC-CONCL}
+
+In this survey, we present four elements of physical design in database: index structures, materialized views, partitioning, and clustering. We started out
+by explaining how these design factors are implemented in traditional Relational Database Management Systems (RDBMS), and then presented how they are used in
+other information systems. We focused on three types of information systems: Main Memory Database Systems (MMDB), XML Databases, and Data Warehouses. We
+presented the challenges involved with each type of system, and how each of the four physical design elements were adapted or utilized to overcome these
+challenges. Table \ref{tab:summary} summarizes the results of our survey. From our literature review, we found that the B+tree is the most utilized index
+structure, and has been adapted and customized to fit the different needs of other systems. For example, it was made more cache conscious to fit MMDB needs,
+and was changed to apply to multidimensions to fit the Data Warehouses needs. Materialized views were found to be heavily utlitized in all the systems we
+presented, except in MMDBs. Partitioning was also used in all systems, but was only used for data reloading in MMDBs. Horizontal partitioning is much more
+common that vertical partitioning. Clustering is very important in all systems, except for MMDBs. Clustering is especially very important for Data Warehouses
+where huge amounts of data are stored.
+
+It was interesting to see how the different nature of these systems affects the physical design. Throughout the survey, we have showed some of the
+commonalities between the different systems. Moreover, understanding how to meet these needs would help us design mash-ups of these different systems. For
+example, just like relational database systems shifted into main memory, we might have an XML main memory database system. In that case, the index structures
+fitted for XML data indexing will have to be adapted for main memory by making sure they are aligned with the cache line size, for example. Similarly, if XML
+data warehouses are developed, more elaborate path indexing techniques and more clustering would be required. 
 
 \begin{table}[!t]
 \centering
@@ -684,9 +723,10 @@ Not needed since random access in main memory costs the same as sequential acces
 or node
 type & Based on document order or structural similarity\\
 \hline
-\textbf{Data Warehouses} & E.g. Universal B+tree, Bitmap index, Projection Index & 
--Essential to improve performance \linebreak \linebreak 
--Not applicable to adhoc queries & 
+\textbf{Data Warehouses} & E.g. Universal B+tree, Bitmap index, Projection Index, R*-tree & 
+-Reduce query evaluation cost \linebreak
+-Reduce view maintenance cost \linebreak 
+-Reduce operational costs & 
 -Horizontal partitioning based on time dimension \linebreak \linebreak 
 -Vertical partitioning of seldom used columns. & Data is
 clustered by
@@ -696,29 +736,6 @@ nature.\\
 \caption{Summary of the different elements of physical design in the studied systems}
 \label{tab:summary}
 \end{table}
-
-\section{Conclusions}
-\label{SEC-CONCL}
-
-In this survey, we present four elements of physical design in database: index structures, materialized views, partitioning, and clustering. We started out
-by explaining how these design factors are implemented in traditional Relational Database Management Systems (RDBMS), and then presented how they are used in
-other information systems. We focused on three types of information systems: Main Memory Database Systems (MMDB), XML Databases, and Data Warehouses. We
-presented the challenges involved with each type of system, and how each of the four physical design elements were adapted or utilized to overcome these
-challenges. Table~\ref{tab:summary} summarizes the results of our survey. From our literature review, we found that the B+tree is the most utilized index
-structure, and has been adapted and customized to fit the different needs of other systems. For example, it was made more cache conscious to fit MMDB needs,
-and was changed to apply to multidimensions to fit the Data Warehouses needs. Materialized views were found to be heavily utlitized in all the systems we
-presented, except in MMDBs. Partitioning was also used in all systems, but was only used for data reloading in MMDBs. Horizontal partitioning is much more
-common that vertical partitioning. Clustering is very important in all systems, except for MMDBs. Clustering is especially very important for Data Warehouses
-where huge amounts of data are stored.
-
-It was interesting to see how the different nature of these systems affects the physical design. Throughout the survey, we have showed some of the
-commonalities between the different systems. Moreover, understanding how to meet these needs would help us design mash-ups of these different systems. For
-example, just like relational database systems shifted into main memory, we might have an XML main memory database system. In that case, the index structures
-fitted for XML data indexing will have to be adapted for main memory by making sure they are aligned with the cache line size, for example. Similarly, if XML
-data warehouses are developed, more elaborate path indexing techniques and more clustering would be required. 
-
-
-
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
