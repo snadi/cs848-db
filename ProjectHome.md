@@ -1,0 +1,1 @@
+This project has been created to host the outcome of our group effort for the course project for CS 848 at UW.
